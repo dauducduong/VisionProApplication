@@ -3,10 +3,35 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:VisionProApplication"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        
+        <TabControl>
+            <TabItem Header="1. Connect" FontSize="20" MinHeight="35">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="4*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0" Background="Beige">
+                        <StackPanel Margin="5">
+                            <Button x:Name="btnConnect" Content="🔗 CONNECT" FontSize="15"  MinHeight="40" Margin="2 2 2 2" Click="btnConnect_Click"></Button>
+                            <Button x:Name="btnTrigger" Content="⚡TRIGGER" FontSize="15" MinHeight="40" Margin="2 2 2 2"></Button>
+                            <Button x:Name="btnLive" Content="🎥 LIVE" FontSize="15" MinHeight="40" Margin="2 2 2 2" Click="btnLive_Click"></Button>
+                            <TextBlock FontSize="20" HorizontalAlignment="Center" Margin="2 2 2 2">Camera Model</TextBlock>
+                            <TextBlock FontSize="15" HorizontalAlignment="Center" Margin="2 2 2 2" Foreground="Green">...</TextBlock>
+                            <TextBlock FontSize="20" HorizontalAlignment="Center" Margin="2 2 2 2">Exposure</TextBlock>
+                            <xctk:IntegerUpDown x:Name="exposureNum" MinHeight="35" FontSize="20" Margin="2 2 2 2" Minimum="5" Maximum="500" Value="10" Increment="5" DataContextChanged="exposureNum_DataContextChanged"></xctk:IntegerUpDown>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Grid.Column="1" Background="CadetBlue">
+                        <WindowsFormsHost x:Name="WPFCogDisplay"></WindowsFormsHost>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="2. Program" FontSize="20"></TabItem>
+        </TabControl>
     </Grid>
 </Window>
