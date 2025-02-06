@@ -28,12 +28,12 @@ namespace VisionProApplication
         private readonly Camera _Camera;
         private readonly Utility _Utility;
         private VisionControl _VisionControl;
-        public CogToolBlock Job;
-        public string FileJob = "";
-        string modelName = "";
-        private List<string> _FileNameList = new List<string>();
-        CogToolBlockEditV2 ctbEdit;
-        private System.Drawing.Bitmap captureImage;
+        private CogToolBlock Job;
+        private string FileJob = "";
+        //private string modelName = "";
+        private readonly List<string> _FileNameList = new List<string>();
+        private readonly CogToolBlockEditV2 _ctbEdit;
+        private int _selectedIndex;
 
         public MainWindow()
         {
@@ -41,17 +41,25 @@ namespace VisionProApplication
             _Utility = new Utility();
             _Camera.VisionImageAvailable += _Camera_VisionImageAvailable;
             CogDisplay = new CogRecordDisplay();
-            ctbEdit = new CogToolBlockEditV2();
+            _ctbEdit = new CogToolBlockEditV2();
             InitializeComponent();
             WPFCogDisplay.Child = CogDisplay;
-            WPFCogTool.Child = ctbEdit;
+            WPFCogTool.Child = _ctbEdit;
             btnLive.IsEnabled = false;
             btnTrigger.IsEnabled = false;
+            btnRunOnce.IsEnabled = false;
         }
         private void _Camera_VisionImageAvailable(object sender, Camera.VinsionImageAvailableEventArgs e)
         {
-            CogDisplay.Image = e.Image;
-            captureImage = e.Image.ToBitmap();
+            if (_selectedIndex == 0)
+            {
+                CogDisplay.Image = e.Image;
+            }
+            else
+            {
+                _VisionControl.StartRunningOnce(e.Image.ToBitmap(), 0);
+            }
+
         }
 
         private void btnConnect_Click(object sender, RoutedEventArgs e)
@@ -66,6 +74,10 @@ namespace VisionProApplication
                     btnTrigger.IsEnabled = true;
                     btnLive.IsEnabled = true;
                 }
+                if (_VisionControl != null)
+                {
+                    btnRunOnce.IsEnabled = true;
+                }
             }
             else
             {
@@ -78,7 +90,7 @@ namespace VisionProApplication
                     btnConnect.Content = "🔗 CONNECT";
                     CogDisplay = new CogRecordDisplay();
                     WPFCogDisplay.Child = CogDisplay;
-                    
+                    btnRunOnce.IsEnabled = false;
                 }
             }
 
@@ -96,6 +108,7 @@ namespace VisionProApplication
                     CogDisplay.StartLiveDisplay(_Camera.mCamera[0].mAcqFifo);
                     btnConnect.IsEnabled = false;
                     btnTrigger.IsEnabled = false;
+                    btnRunOnce.IsEnabled = false;
                     btnLive.Background = new SolidColorBrush(Colors.LimeGreen);
                 }
                 else
@@ -108,6 +121,7 @@ namespace VisionProApplication
                 btnLive.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0xFF, 0xDD, 0xDD, 0xDD));
                 btnTrigger.IsEnabled = true;
                 btnConnect.IsEnabled = true;
+                btnRunOnce.IsEnabled = true;
                 CogDisplay.StopLiveDisplay();
                 //Reset CogDisplay
                 //CogDisplay = new CogRecordDisplay();
@@ -127,12 +141,14 @@ namespace VisionProApplication
 
         private void btnLoadJob_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog open = new OpenFileDialog();
-            open.Filter = "JobFile |*.vpp";
+            OpenFileDialog open = new OpenFileDialog
+            {
+                Filter = "JobFile |*.vpp"
+            };
             if (open.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 FileJob = open.FileName;
-                modelName = FileJob.Split("\\".ToCharArray())[FileJob.Split("\\".ToCharArray()).Length - 2];
+                //modelName = FileJob.Split("\\".ToCharArray())[FileJob.Split("\\".ToCharArray()).Length - 2];
                 _FileNameList.Add(FileJob);
                 try
                 {
@@ -140,11 +156,15 @@ namespace VisionProApplication
                     List<CogToolBlock> _mtoolblockManager = new List<CogToolBlock>();
                     _mtoolblockManager.Add(Job);
                     _VisionControl = new VisionControl(ref _mtoolblockManager);
-                    ctbEdit.Subject = Job;
+                    _ctbEdit.Subject = Job;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.ToString());
+                    System.Windows.MessageBox.Show(ex.ToString());
+                }
+                if (_Camera.listCam.Count > 0)
+                {
+                    btnRunOnce.IsEnabled = true;
                 }
             }
         }
@@ -158,7 +178,16 @@ namespace VisionProApplication
         private void btnRunOnce_Click(object sender, RoutedEventArgs e)
         {
             _Camera.RunOnce(0);
-            _VisionControl.StartRunningOnce(captureImage, 0);
+            //_VisionControl.StartRunningOnce(captureImage, 0);
+        }
+
+        private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            System.Windows.Controls.TabControl tabControl = sender as System.Windows.Controls.TabControl;
+            if (tabControl != null)
+            {
+                _selectedIndex = tabControl.SelectedIndex;
+            }
         }
     }
 }

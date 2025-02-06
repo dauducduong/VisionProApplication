@@ -8,11 +8,11 @@
         mc:Ignorable="d"
         Title="Basic VisionPro Application" Height="450" Width="800" Closing="Window_Closing">
     <Grid>
-        <TabControl x:Name="tabControl" Grid.ColumnSpan="2">
+        <TabControl x:Name="tabControl" Grid.ColumnSpan="2" SelectionChanged="tabControl_SelectionChanged">
             <TabItem Header="1. Connect" FontSize="20" MinHeight="35">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*" MaxWidth="200"></ColumnDefinition>
                         <ColumnDefinition Width="4*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <Grid Grid.Column="0" Background="Beige">

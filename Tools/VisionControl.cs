@@ -7,6 +7,7 @@ using Cognex.VisionPro;
 using Cognex.VisionPro.ToolBlock;
 using Cognex.VisionPro.QuickBuild;
 using System.Drawing;
+using System.Windows;
 
 namespace VisionProApplication
 {
@@ -94,13 +95,13 @@ namespace VisionProApplication
                 CogImage8Grey inputImage = new CogImage8Grey(inputBitmap);
                 try
                 {
-                    _cogToolBlockManager[index].Inputs["InputImage"].Value = inputImage;
+                    _cogToolBlockManager[index].Inputs["OutputImage"].Value = inputImage;
                     _cogToolBlockManager[index].Run();
 
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-
+                    MessageBox.Show(ex.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
         }
