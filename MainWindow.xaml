@@ -41,7 +41,7 @@
                         <StackPanel Margin="5">
                             <Button x:Name="btnLoadJob" Content="📂 LOAD JOB" FontSize="15"  MinHeight="40" Margin="2 2 2 2" Click="btnLoadJob_Click"></Button>
                             <Button x:Name="btnRunOnce" Content="⚡RUN ONCE" FontSize="15" MinHeight="40" Margin="2 2 2 2" Click="btnRunOnce_Click"/>
-                            <Button x:Name="btnSaveJob" Content="💾 SAVE JOB" FontSize="15" MinHeight="40" Margin="2 2 2 2"/>
+                            <Button x:Name="btnSaveJob" Content="💾 SAVE JOB" FontSize="15" MinHeight="40" Margin="2 2 2 2" Click="btnSaveJob_Click"/>
                         </StackPanel>
                     </Grid>
                     <Grid Grid.Column="1" Background="CadetBlue">

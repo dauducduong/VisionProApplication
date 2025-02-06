@@ -26,7 +26,7 @@ namespace VisionProApplication
     {
         private CogRecordDisplay CogDisplay { get; set; }
         private readonly Camera _Camera;
-        private readonly Utility _Utility;
+        //private readonly Utility _Utility;
         private VisionControl _VisionControl;
         private CogToolBlock Job;
         private string FileJob = "";
@@ -38,7 +38,7 @@ namespace VisionProApplication
         public MainWindow()
         {
             _Camera = new Camera();
-            _Utility = new Utility();
+            //_Utility = new Utility();
             _Camera.VisionImageAvailable += _Camera_VisionImageAvailable;
             CogDisplay = new CogRecordDisplay();
             _ctbEdit = new CogToolBlockEditV2();
@@ -48,6 +48,7 @@ namespace VisionProApplication
             btnLive.IsEnabled = false;
             btnTrigger.IsEnabled = false;
             btnRunOnce.IsEnabled = false;
+            btnSaveJob.IsEnabled = false;
         }
         private void _Camera_VisionImageAvailable(object sender, Camera.VinsionImageAvailableEventArgs e)
         {
@@ -70,6 +71,7 @@ namespace VisionProApplication
                 if (_Camera.listCam.Count > 0)
                 {
                     txtCamModel.Text = _Camera.listCam.First().Key;
+                    _Camera.SetExposure(0, Convert.ToInt32(txtExposureNum.Text));
                     btnConnect.Content = "⛓️‍💥 DISCONNECT";
                     btnTrigger.IsEnabled = true;
                     btnLive.IsEnabled = true;
@@ -166,6 +168,7 @@ namespace VisionProApplication
                 {
                     btnRunOnce.IsEnabled = true;
                 }
+                btnSaveJob.IsEnabled = true;
             }
         }
 
@@ -187,6 +190,25 @@ namespace VisionProApplication
             if (tabControl != null)
             {
                 _selectedIndex = tabControl.SelectedIndex;
+            }
+        }
+
+        private void btnSaveJob_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog save = new SaveFileDialog
+            {
+                Filter = "JobFile |*.vpp"
+            };
+            if (save.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                try
+                {
+                    CogSerializer.SaveObjectToFile(FileJob, save.FileName);
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show(ex.ToString());
+                }
             }
         }
     }

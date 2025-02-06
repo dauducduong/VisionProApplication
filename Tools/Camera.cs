@@ -166,7 +166,10 @@ namespace VisionProApplication
                     mCamera[Index].mAcqFifo.OwnedExposureParams.Exposure = exp;
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
 
         }
 
