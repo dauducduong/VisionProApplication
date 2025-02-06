@@ -77,7 +77,6 @@ namespace VisionProApplication
                     var cameraFormat = mFrameGrabber.AvailableVideoFormats[0];
                     mCamera[i].mAcqFifo = mFrameGrabber.CreateAcqFifo(cameraFormat,
                     CogAcqFifoPixelFormatConstants.Format8Grey, 0, true);
-
                     //mCamera[i].mAcqFifo.OwnedExposureParams.Exposure =  5;
                     mCamera[i].isConnect = true;
                     numAcqs.Add(cameraName, 0);
