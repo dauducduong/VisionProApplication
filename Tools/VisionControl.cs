@@ -89,18 +89,20 @@ namespace VisionProApplication
         }
         public void StartRunningOnce(Bitmap inputBitmap, int index)
         {
-            CogImage8Grey inputImage = new CogImage8Grey(inputBitmap);
-            try
+            if (inputBitmap != null)
             {
-                _cogToolBlockManager[index].Inputs["InputImage"].Value = inputImage;
-                _cogToolBlockManager[index].Run();
+                CogImage8Grey inputImage = new CogImage8Grey(inputBitmap);
+                try
+                {
+                    _cogToolBlockManager[index].Inputs["InputImage"].Value = inputImage;
+                    _cogToolBlockManager[index].Run();
 
-            }
-            catch (Exception)
-            {
-                
-            }
+                }
+                catch (Exception)
+                {
 
+                }
+            }
         }
 
     }

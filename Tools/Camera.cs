@@ -25,6 +25,8 @@ namespace VisionProApplication
         public Dictionary<string, bool> ISLIVE = new Dictionary<string, bool>();
 
         public Dictionary<string, int> numAcqs = new Dictionary<string, int>();
+
+        public Dictionary<string, int> listCam = new Dictionary<string, int>();
         //public ICogFrameGrabber mFrameGrabber = null;
 
         //public Dictionary<string, int> numAcqs = new Dictionary<string, int>();
@@ -46,13 +48,8 @@ namespace VisionProApplication
         public delegate void VisionImageAvailableEventHandler(object sender, VinsionImageAvailableEventArgs e);
         public event VisionImageAvailableEventHandler VisionImageAvailable = null;
         public CAMERA[] mCamera = new CAMERA[1];
-        public Camera()
-        {
-            DeviceListAcq();
-            //SetupOutput();
-        }
 
-        private void DeviceListAcq()
+        public void DeviceListAcq()
         {
             numAcqs.Clear();
             try
@@ -85,6 +82,7 @@ namespace VisionProApplication
                     mCamera[i].isConnect = true;
                     numAcqs.Add(cameraName, 0);
                     ISLIVE.Add(cameraName, false);
+                    listCam.Add(mFrameGrabber.Name.Replace("GigE Vision:", "").Trim(), 0);
                     mCamera[i].mAcqFifo.Complete += Camera_Complete;
 
                 }
@@ -163,7 +161,10 @@ namespace VisionProApplication
         {
             try
             {
-                mCamera[Index].mAcqFifo.OwnedExposureParams.Exposure = exp;
+                if (listCam.Count > 0)
+                {
+                    mCamera[Index].mAcqFifo.OwnedExposureParams.Exposure = exp;
+                }
             }
             catch { }
 
@@ -210,7 +211,10 @@ namespace VisionProApplication
 
         public void DestroyCamera(int index)
         {
-            mCamera[index].mAcqFifo.FrameGrabber.Disconnect(false);
+            mCamera[index].mAcqFifo.FrameGrabber.Disconnect(true);
+            numAcqs.Clear();
+            ISLIVE.Clear();
+            listCam.Clear();
 
         }
 
