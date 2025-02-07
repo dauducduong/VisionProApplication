@@ -1,8 +1,11 @@
 ﻿using Cognex.VisionPro;
+using Cognex.VisionPro.ImageFile;
 using Cognex.VisionPro.ToolBlock;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +37,7 @@ namespace VisionProApplication
         private readonly List<string> _FileNameList = new List<string>();
         private readonly CogToolBlockEditV2 _ctbEdit;
         private int _selectedIndex;
+        private ImageManager imageManager = new ImageManager();
 
         public MainWindow()
         {
@@ -49,6 +53,8 @@ namespace VisionProApplication
             btnTrigger.IsEnabled = false;
             btnRunOnce.IsEnabled = false;
             btnSaveJob.IsEnabled = false;
+            btnNextImg.IsEnabled = false;
+            btnPrevImg.IsEnabled = false;
         }
         private void _Camera_VisionImageAvailable(object sender, Camera.VinsionImageAvailableEventArgs e)
         {
@@ -65,7 +71,7 @@ namespace VisionProApplication
 
         private void btnConnect_Click(object sender, RoutedEventArgs e)
         {
-            if (btnConnect.Content is string buttonText && buttonText == "🔗 CONNECT") 
+            if (btnConnect.Content is string buttonText && buttonText == "🔗 CONNECT")
             {
                 _Camera.DeviceListAcq();
                 if (_Camera.listCam.Count > 0)
@@ -96,7 +102,7 @@ namespace VisionProApplication
                 }
             }
 
-            
+
         }
 
         private void btnLive_Click(object sender, RoutedEventArgs e)
@@ -159,6 +165,7 @@ namespace VisionProApplication
                     _mtoolblockManager.Add(Job);
                     _VisionControl = new VisionControl(ref _mtoolblockManager);
                     _ctbEdit.Subject = Job;
+
                 }
                 catch (Exception ex)
                 {
@@ -209,6 +216,57 @@ namespace VisionProApplication
                 {
                     System.Windows.MessageBox.Show(ex.ToString());
                 }
+            }
+        }
+
+        private void btnLoadImage_Click(object sender, RoutedEventArgs e)
+        {
+            using (FolderBrowserDialog dialog = new FolderBrowserDialog())
+            {
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    string folderPath = dialog.SelectedPath;
+                    imageManager.LoadImagesToMemory(folderPath);
+                    if (imageManager.GetCurrentIndex() != -1)
+                    {
+                        ShowImage();
+                        btnNextImg.IsEnabled = true;
+                    }
+                    
+                }
+            }
+        }
+        private void ShowImage()
+        {
+            CogDisplay.Image = imageManager.ConvertBitmapToCogImage(imageManager.ImageList[imageManager.GetCurrentIndex()].Image);
+            txtImageName.Text = imageManager.ImageList[imageManager.GetCurrentIndex()].FileName;
+        }
+
+        private void btnPrevImg_Click(object sender, RoutedEventArgs e)
+        {
+            if (!btnNextImg.IsEnabled)
+            {
+                btnNextImg.IsEnabled = true;
+            }
+            imageManager.SetPrevIndex();
+            ShowImage();
+            if (imageManager.GetCurrentIndex() == 0)
+            {
+                btnPrevImg.IsEnabled = false;
+            }
+        }
+
+        private void btnNextImg_Click(object sender, RoutedEventArgs e)
+        {
+            if (!btnPrevImg.IsEnabled)
+            {
+                btnPrevImg.IsEnabled = true;
+            }
+            imageManager.SetNextIndex();
+            ShowImage();
+            if (imageManager.GetCurrentIndex() == imageManager.ImageList.Count - 1)
+            {
+                btnNextImg.IsEnabled = false;
             }
         }
     }
