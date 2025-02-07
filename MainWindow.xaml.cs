@@ -52,6 +52,7 @@ namespace VisionProApplication
             btnLive.IsEnabled = false;
             btnTrigger.IsEnabled = false;
             btnRunOnce.IsEnabled = false;
+            btnRunOncePB.IsEnabled = false;
             btnSaveJob.IsEnabled = false;
             btnNextImg.IsEnabled = false;
             btnPrevImg.IsEnabled = false;
@@ -175,6 +176,10 @@ namespace VisionProApplication
                 {
                     btnRunOnce.IsEnabled = true;
                 }
+                if (imageManager.GetCount() > 0)
+                {
+                    btnRunOncePB.IsEnabled = true;
+                }
                 btnSaveJob.IsEnabled = true;
             }
         }
@@ -189,6 +194,11 @@ namespace VisionProApplication
         {
             _Camera.RunOnce(0);
             //_VisionControl.StartRunningOnce(captureImage, 0);
+        }
+
+        private void btnRunOncePB_Click(object sender, RoutedEventArgs e)
+        {
+            _VisionControl.StartRunningOnce(imageManager.GetCurrentImage(), 0);
         }
 
         private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -231,6 +241,10 @@ namespace VisionProApplication
                     {
                         ShowImage();
                         btnNextImg.IsEnabled = true;
+                        if (_VisionControl != null)
+                        {
+                            btnRunOncePB.IsEnabled = true;
+                        }
                     }
                     
                 }
@@ -238,8 +252,9 @@ namespace VisionProApplication
         }
         private void ShowImage()
         {
-            CogDisplay.Image = imageManager.ConvertBitmapToCogImage(imageManager.ImageList[imageManager.GetCurrentIndex()].Image);
-            txtImageName.Text = imageManager.ImageList[imageManager.GetCurrentIndex()].FileName;
+            CogDisplay.Image = imageManager.ConvertBitmapToCogImage(imageManager.GetCurrentImage());
+            txtImageName.Text = imageManager.GetCurrentFileName();
+            txtImageCount.Text = "File Name" + " (" + (imageManager.GetCurrentIndex() + 1).ToString() + "/" + imageManager.GetCount().ToString() + ")";
         }
 
         private void btnPrevImg_Click(object sender, RoutedEventArgs e)
@@ -264,10 +279,15 @@ namespace VisionProApplication
             }
             imageManager.SetNextIndex();
             ShowImage();
-            if (imageManager.GetCurrentIndex() == imageManager.ImageList.Count - 1)
+            if (imageManager.GetCurrentIndex() == imageManager.GetCount() - 1)
             {
                 btnNextImg.IsEnabled = false;
             }
+        }
+
+        private void btnStart_Click(object sender, RoutedEventArgs e)
+        {
+            _VisionControl.StartRunningOnce(imageManager.GetCurrentImage(), 0);
         }
     }
 }

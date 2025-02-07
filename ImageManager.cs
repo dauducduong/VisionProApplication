@@ -19,8 +19,9 @@ public class ImageItem
 
 public class ImageManager
 {
-    public List<ImageItem> ImageList { get; private set; } = new List<ImageItem>();
+    private List<ImageItem> ImageList { get; set; } = new List<ImageItem>();
     private int CurrentIndex { get; set; } = -1;
+    private int Count { get; set; } = 0;
     public void LoadImagesToMemory(string folderPath)
     {
         ImageList.Clear(); // Xóa danh sách cũ
@@ -39,10 +40,23 @@ public class ImageManager
                 ImageList.Add(new ImageItem(bitmap, fileName));
             }
         }
-        if (ImageList.Count > 0)
+        Count = ImageList.Count;
+        if (Count > 0)
         {
             CurrentIndex = 0;
         }
+    }
+    public int GetCount()
+    {
+        return Count;
+    }
+    public Bitmap GetCurrentImage()
+    {
+        return BitmapImageToBitmap(ImageList[CurrentIndex].Image); 
+    }
+    public String GetCurrentFileName()
+    {
+        return ImageList[CurrentIndex].FileName;
     }
     public int GetCurrentIndex()
     {
@@ -88,9 +102,8 @@ public class ImageManager
             }
         }
     }
-    public ICogImage ConvertBitmapToCogImage(BitmapImage bitmapImage)
+    public ICogImage ConvertBitmapToCogImage(Bitmap bitmap)
     {
-        Bitmap bitmap = BitmapImageToBitmap(bitmapImage);
         return new CogImage24PlanarColor(bitmap);
     }
 }

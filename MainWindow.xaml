@@ -17,7 +17,7 @@
                     </Grid.ColumnDefinitions>
                     <Grid Grid.Column="0" Background="Beige">
                         <StackPanel Margin="5">
-                            <TextBlock Text="Camera" TextAlignment="Center" FontSize="20" Margin="2 2 2 2"></TextBlock>
+                            <TextBlock Text="CAMERA" TextAlignment="Center" FontSize="20" Margin="2 2 2 2"></TextBlock>
                             <Button x:Name="btnConnect" Content="🔗 CONNECT" FontSize="15"  MinHeight="40" Margin="2 2 2 2" Click="btnConnect_Click"></Button>
                             <Button x:Name="btnTrigger" Content="⚡TRIGGER" FontSize="15" MinHeight="40" Margin="2 2 2 2" Click="btnTrigger_Click"></Button>
                             <Button x:Name="btnLive" Content="🎥 LIVE" FontSize="15" MinHeight="40" Margin="2 2 2 2" Click="btnLive_Click"></Button>
@@ -26,7 +26,7 @@
                             <TextBlock FontSize="20" HorizontalAlignment="Center" Margin="2 2 2 2">Exposure</TextBlock>
                             <xctk:IntegerUpDown x:Name="txtExposureNum" MinHeight="35" FontSize="20" Margin="2 2 2 2" Minimum="5" Maximum="500" Value="50" Increment="5" ValueChanged="TxtExposureNum_ValueChanged"/>
                             <Separator Margin="10"/>
-                            <TextBlock Text="Playback" TextAlignment="Center" FontSize="20" Margin="2 2 2 2"></TextBlock>
+                            <TextBlock Text="PLAYBACK" TextAlignment="Center" FontSize="20" Margin="2 0 2 2"></TextBlock>
                             <Button x:Name="btnLoadImage" Content="📂 LOAD IMAGE" FontSize="15" MinHeight="40" Margin="2 2 2 2" Click="btnLoadImage_Click"></Button>
                             <Grid MinHeight="40" Margin="2">
                                 <Grid.ColumnDefinitions>
@@ -36,7 +36,7 @@
                                 <Button x:Name="btnPrevImg"  Grid.Column="0" Margin="0 0 1 0" Content="⮜" FontWeight="Bold" FontSize="25" Click="btnPrevImg_Click"></Button>
                                 <Button x:Name="btnNextImg" Grid.Column="1" Margin="1 0 0 0" Content="⮞" FontWeight="Bold" FontSize="25" Click="btnNextImg_Click"></Button>
                             </Grid>
-                            <TextBlock Text="File Name" TextAlignment="Center" FontSize="20" Margin="2 2 2 2"></TextBlock>
+                            <TextBlock x:Name="txtImageCount" Text="File Name" TextAlignment="Center" FontSize="20" Margin="2 2 2 2"></TextBlock>
                             <TextBox x:Name="txtImageName" FontSize="15" Margin="2 2 2 2" MinHeight="40" TextAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" IsReadOnly="True"></TextBox>
                         </StackPanel>
                     </Grid>
@@ -54,7 +54,8 @@
                     <Grid Grid.Column="0" Background="Beige">
                         <StackPanel Margin="5">
                             <Button x:Name="btnLoadJob" Content="📂 LOAD JOB" FontSize="15"  MinHeight="40" Margin="2 2 2 2" Click="btnLoadJob_Click"></Button>
-                            <Button x:Name="btnRunOnce" Content="⚡RUN ONCE" FontSize="15" MinHeight="40" Margin="2 2 2 2" Click="btnRunOnce_Click"/>
+                            <Button x:Name="btnRunOnce" Content="⚡RUN ONCE CAMERA" FontSize="15" MinHeight="40" Margin="2 2 2 2" Click="btnRunOnce_Click"/>
+                            <Button x:Name="btnRunOncePB" Content="⚡RUN ONCE PLAYBACK" FontSize="15" MinHeight="40" Margin="2 2 2 2" Click="btnRunOncePB_Click"/>
                             <Button x:Name="btnSaveJob" Content="💾 SAVE JOB" FontSize="15" MinHeight="40" Margin="2 2 2 2" Click="btnSaveJob_Click"/>
                         </StackPanel>
                     </Grid>
@@ -72,7 +73,7 @@
                     <Grid Grid.Column="0" Background="Beige">
                         <StackPanel Margin="5">
                             <TextBlock Text="Control Panel" Margin="0 0 0 5"  HorizontalAlignment="Center"></TextBlock>
-                            <Button x:Name="btnStart" Content="▶️ START" FontSize="15"  MinHeight="40" Margin="2 2 2 2"></Button>
+                            <Button x:Name="btnStart" Content="▶️ START" FontSize="15"  MinHeight="40" Margin="2 2 2 2" Click="btnStart_Click"></Button>
                             <Button x:Name="btnStop" Content="⏹️ STOP" FontSize="15" MinHeight="40" Margin="2 2 2 2"/>
                             <Button x:Name="btnReset" Content="🔃 RESET" FontSize="15" MinHeight="40" Margin="2 2 2 2"/>
                             <TextBlock Text="Data Monitoring" Margin="0 5 0 5" TextAlignment="Justify" HorizontalAlignment="Center" VerticalAlignment="Center"/>
