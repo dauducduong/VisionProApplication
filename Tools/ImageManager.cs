@@ -1,14 +1,15 @@
 ﻿using Cognex.VisionPro;
+using Org.BouncyCastle.Asn1.Cms;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Media.Imaging;
 
-public class ImageItem
+public readonly struct ImageItem
 {
-    public BitmapImage Image { get; set; }
-    public string FileName { get; set; }
+    public BitmapImage Image { get; }
+    public string FileName { get; }
 
     public ImageItem(BitmapImage image, string fileName)
     {
@@ -52,11 +53,25 @@ public class ImageManager
     }
     public Bitmap GetCurrentImage()
     {
-        return BitmapImageToBitmap(ImageList[CurrentIndex].Image); 
+        if (Count > 0)
+        {
+            return BitmapImageToBitmap(ImageList[CurrentIndex].Image);
+        }
+        else
+        {
+            return null;
+        }
     }
     public String GetCurrentFileName()
     {
-        return ImageList[CurrentIndex].FileName;
+        if (Count > 0)
+        {
+            return (ImageList[CurrentIndex].FileName);
+        }
+        else
+        {
+            return null;
+        }
     }
     public int GetCurrentIndex()
     {
@@ -75,7 +90,13 @@ public class ImageManager
         }
         
     }
-
+    public void ResetIndex()
+    {
+        if (Count > 0)
+        {
+            CurrentIndex = 0;
+        }
+    }
     public int SetPrevIndex()
     {
         if (CurrentIndex == 0)

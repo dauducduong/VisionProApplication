@@ -170,10 +170,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ImageManager.cs" />
-    <Compile Include="VisionPro Tools\Camera.cs" />
-    <Compile Include="VisionPro Tools\Utility.cs" />
-    <Compile Include="VisionPro Tools\VisionControl.cs" />
+    <Compile Include="Tools\ImageManager.cs" />
+    <Compile Include="Tools\Camera.cs" />
+    <Compile Include="Tools\Utility.cs" />
+    <Compile Include="Tools\VisionControl.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

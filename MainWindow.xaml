@@ -8,8 +8,8 @@
         mc:Ignorable="d"
         Title="Basic VisionPro Application" Height="720" Width="1280" Closing="Window_Closing">
     <Grid>
-        <TabControl x:Name="tabControl" Grid.ColumnSpan="2" SelectionChanged="tabControl_SelectionChanged">
-            <TabItem Header="1. Connect" FontSize="20" MinHeight="35" MinWidth="120">
+        <TabControl x:Name="tabControl" Grid.ColumnSpan="2">
+            <TabItem Header="1. Connect" FontSize="20" MinHeight="35" MinWidth="120" GotFocus="TabItem1_GotFocus">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" MaxWidth="200"></ColumnDefinition>
@@ -75,7 +75,7 @@
                             <TextBlock Text="Control Panel" Margin="0 0 0 5"  HorizontalAlignment="Center"></TextBlock>
                             <Button x:Name="btnStart" Content="▶️ START" FontSize="15"  MinHeight="40" Margin="2 2 2 2" Click="btnStart_Click"></Button>
                             <Button x:Name="btnStop" Content="⏹️ STOP" FontSize="15" MinHeight="40" Margin="2 2 2 2"/>
-                            <Button x:Name="btnReset" Content="🔃 RESET" FontSize="15" MinHeight="40" Margin="2 2 2 2"/>
+                            <Button x:Name="btnReset" Content="🔃 RESET" FontSize="15" MinHeight="40" Margin="2 2 2 2" Click="btnReset_Click"/>
                             <TextBlock Text="Data Monitoring" Margin="0 5 0 5" TextAlignment="Justify" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             <Grid Height="Auto" Background="LightGray">
                                 <Grid.ColumnDefinitions>
@@ -83,7 +83,7 @@
                                     <ColumnDefinition Width="*"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Text="OK" Foreground="LimeGreen" Width="100" FontSize="35" HorizontalAlignment="Center"></TextBlock>
-                                <TextBlock Grid.Column="1" Text="0" FontSize="25" VerticalAlignment="Center"  HorizontalAlignment="Center"></TextBlock>
+                                <TextBlock x:Name="txtOkCount" Grid.Column="1" Text="0" FontSize="25" VerticalAlignment="Center"  HorizontalAlignment="Center"></TextBlock>
                             </Grid>
                             <Grid Height="Auto" Background="LightGray">
                                 <Grid.ColumnDefinitions>
@@ -91,7 +91,7 @@
                                     <ColumnDefinition Width="*"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Text="NG" Foreground="Red" Width="100" FontSize="35" HorizontalAlignment="Center"></TextBlock>
-                                <TextBlock Grid.Column="1" Text="0" FontSize="25" VerticalAlignment="Center"  HorizontalAlignment="Center"></TextBlock>
+                                <TextBlock x:Name="txtNgCount" Grid.Column="1" Text="0" FontSize="25" VerticalAlignment="Center"  HorizontalAlignment="Center"></TextBlock>
                             </Grid>
                             <Grid Height="Auto" Background="LightGray">
                                 <Grid.ColumnDefinitions>
@@ -99,7 +99,7 @@
                                     <ColumnDefinition Width="*"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Text="TOTAL" Width="100" FontSize="35" HorizontalAlignment="Center"></TextBlock>
-                                <TextBlock Grid.Column="1" Text="0" FontSize="25" VerticalAlignment="Center"  HorizontalAlignment="Center"></TextBlock>
+                                <TextBlock x:Name="txtTotalCount" Grid.Column="1" Text="0" FontSize="25" VerticalAlignment="Center"  HorizontalAlignment="Center"></TextBlock>
                             </Grid>
                         </StackPanel>
                     </Grid>

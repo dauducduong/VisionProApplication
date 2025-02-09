@@ -50,7 +50,6 @@ namespace VisionProApplication
             {
                 if (mAttached)
                     return;
-
                 mAttached = true;
                 for (int i = 0; i < _cogToolBlockManager.Count; i++)
                 {

@@ -1,5 +1,6 @@
 ﻿using Cognex.VisionPro;
 using Cognex.VisionPro.ImageFile;
+using Cognex.VisionPro.QuickBuild.Implementation.Internal;
 using Cognex.VisionPro.ToolBlock;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,7 @@ namespace VisionProApplication
     public partial class MainWindow : Window
     {
         private CogRecordDisplay CogDisplay { get; set; }
+        private CogRecordDisplay CogResultDisplay { get; set; }
         private readonly Camera _Camera;
         //private readonly Utility _Utility;
         private VisionControl _VisionControl;
@@ -38,17 +40,24 @@ namespace VisionProApplication
         private readonly CogToolBlockEditV2 _ctbEdit;
         private int _selectedIndex;
         private ImageManager imageManager = new ImageManager();
+        private int _okCount;
+        private int _ngCount;
+        private int _totalCount;
+
 
         public MainWindow()
         {
             _Camera = new Camera();
             //_Utility = new Utility();
             _Camera.VisionImageAvailable += _Camera_VisionImageAvailable;
+            
             CogDisplay = new CogRecordDisplay();
+            CogResultDisplay = new CogRecordDisplay();
             _ctbEdit = new CogToolBlockEditV2();
             InitializeComponent();
             WPFCogDisplay.Child = CogDisplay;
             WPFCogTool.Child = _ctbEdit;
+            WPFResultDisplay.Child = CogResultDisplay;
             btnLive.IsEnabled = false;
             btnTrigger.IsEnabled = false;
             btnRunOnce.IsEnabled = false;
@@ -56,6 +65,9 @@ namespace VisionProApplication
             btnSaveJob.IsEnabled = false;
             btnNextImg.IsEnabled = false;
             btnPrevImg.IsEnabled = false;
+            _okCount = 0;
+            _ngCount = 0;
+            _totalCount = 0;
         }
         private void _Camera_VisionImageAvailable(object sender, Camera.VinsionImageAvailableEventArgs e)
         {
@@ -165,6 +177,8 @@ namespace VisionProApplication
                     List<CogToolBlock> _mtoolblockManager = new List<CogToolBlock>();
                     _mtoolblockManager.Add(Job);
                     _VisionControl = new VisionControl(ref _mtoolblockManager);
+                    _VisionControl.VisionControlUserResultAvailable += _VisionControl_VisionControlUserResultAvailable;
+                    _VisionControl.AttachToJobManager(true);
                     _ctbEdit.Subject = Job;
 
                 }
@@ -198,6 +212,14 @@ namespace VisionProApplication
 
         private void btnRunOncePB_Click(object sender, RoutedEventArgs e)
         {
+            if (imageManager.GetCurrentIndex() == imageManager.GetCount() - 1)
+            {
+                imageManager.ResetIndex();
+            }
+            else
+            {
+                imageManager.SetNextIndex();
+            }
             _VisionControl.StartRunningOnce(imageManager.GetCurrentImage(), 0);
         }
 
@@ -255,39 +277,93 @@ namespace VisionProApplication
             CogDisplay.Image = imageManager.ConvertBitmapToCogImage(imageManager.GetCurrentImage());
             txtImageName.Text = imageManager.GetCurrentFileName();
             txtImageCount.Text = "File Name" + " (" + (imageManager.GetCurrentIndex() + 1).ToString() + "/" + imageManager.GetCount().ToString() + ")";
-        }
-
-        private void btnPrevImg_Click(object sender, RoutedEventArgs e)
-        {
-            if (!btnNextImg.IsEnabled)
-            {
-                btnNextImg.IsEnabled = true;
-            }
-            imageManager.SetPrevIndex();
-            ShowImage();
-            if (imageManager.GetCurrentIndex() == 0)
-            {
-                btnPrevImg.IsEnabled = false;
-            }
-        }
-
-        private void btnNextImg_Click(object sender, RoutedEventArgs e)
-        {
-            if (!btnPrevImg.IsEnabled)
-            {
-                btnPrevImg.IsEnabled = true;
-            }
-            imageManager.SetNextIndex();
-            ShowImage();
             if (imageManager.GetCurrentIndex() == imageManager.GetCount() - 1)
             {
                 btnNextImg.IsEnabled = false;
             }
+            else
+            {
+                btnNextImg.IsEnabled = true;
+            }
+            if (imageManager.GetCurrentIndex() == 0)
+            {
+                btnPrevImg.IsEnabled = false;
+            }
+            else
+            {
+                btnPrevImg.IsEnabled = true;
+            }
+        }
+
+        private void btnPrevImg_Click(object sender, RoutedEventArgs e)
+        {
+            imageManager.SetPrevIndex();
+            ShowImage();
+        }
+
+        private void btnNextImg_Click(object sender, RoutedEventArgs e)
+        {
+            imageManager.SetNextIndex();
+            ShowImage();
         }
 
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
             _VisionControl.StartRunningOnce(imageManager.GetCurrentImage(), 0);
+        }
+
+        private void _VisionControl_VisionControlUserResultAvailable(object sender, VisionControl.VisionControlUserResultAvailableEventArgs e)
+        {
+            var result = e.Result;
+            try
+            {
+                var jobPass = e.JobStatus.Result;
+                if (result != null)
+                {
+                    //bool totalResult = (bool)result["TotalResult"].Value;
+                    CogResultDisplay.Record = e.LastRunRecord.SubRecords[0];
+                    //CogResultDisplay.AutoFit = true;
+                    if (jobPass == CogToolResultConstants.Accept)
+                    {
+                        _okCount++;
+                    }
+                    else 
+                    {
+                        _ngCount++;
+                    }
+                    _totalCount = _okCount + _ngCount;
+                    txtOkCount.Text = _okCount.ToString();
+                    txtNgCount.Text = _ngCount.ToString();
+                    txtTotalCount.Text = _totalCount.ToString();
+                    
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.ToString());
+            }
+
+        }
+
+        private void TabItem1_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (imageManager.GetCount() > 0)
+            {
+                if (imageManager.GetCurrentFileName() != txtImageName.Text)
+                {
+                    ShowImage();
+                }
+            }
+        }
+
+        private void btnReset_Click(object sender, RoutedEventArgs e)
+        {
+            _okCount = 0;
+            _ngCount = 0;
+            _totalCount = 0;
+            txtOkCount.Text = "0";
+            txtNgCount.Text = "0";
+            txtTotalCount.Text = "0";
         }
     }
 }
