@@ -210,10 +210,22 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="TestRun Material\toolblock.vpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="TestRun Material\images\10.bmp" />
+    <Resource Include="TestRun Material\images\11.bmp" />
+    <Resource Include="TestRun Material\images\12.bmp" />
+    <Resource Include="TestRun Material\images\3.bmp" />
+    <Resource Include="TestRun Material\images\4.bmp" />
+    <Resource Include="TestRun Material\images\5.bmp" />
+    <Resource Include="TestRun Material\images\6.bmp" />
+    <Resource Include="TestRun Material\images\7.bmp" />
+    <Resource Include="TestRun Material\images\8.bmp" />
+    <Resource Include="TestRun Material\images\9.bmp" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
