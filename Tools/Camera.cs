@@ -160,7 +160,7 @@ namespace VisionProApplication
         {
             try
             {
-                if (listCam.Count > 0)
+                if (mCamera[Index].isConnect)
                 {
                     mCamera[Index].mAcqFifo.OwnedExposureParams.Exposure = exp;
                 }

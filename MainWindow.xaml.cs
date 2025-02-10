@@ -80,9 +80,19 @@ namespace VisionProApplication
         }
         private void _Camera_VisionImageAvailable(object sender, Camera.VinsionImageAvailableEventArgs e)
         {
-            if (_selectedIndex == 0)
+            if (!_isRunning) 
             {
-                _CogDisplay.Image = e.Image;
+                if (_selectedIndex == 0)
+                {
+                    _CogDisplay.Image = e.Image;
+                }
+                else
+                {
+                    if (_selectedIndex == 1) 
+                    {
+                        _VisionControl.StartRunningOnce(e.Image.ToBitmap(), 0);
+                    }
+                }
             }
             else
             {
@@ -123,6 +133,10 @@ namespace VisionProApplication
                     _CogDisplay = new CogRecordDisplay();
                     WPFCogDisplay.Child = _CogDisplay;
                     btnRunOnce.IsEnabled = false;
+                    if (!_isPlaybackOpened && !_isJobLoaded)
+                    {
+                        btnStart.IsEnabled = false;
+                    }
                 }
             }
 
@@ -219,7 +233,7 @@ namespace VisionProApplication
         private void btnRunOnce_Click(object sender, RoutedEventArgs e)
         {
             _Camera.RunOnce(0);
-            //_VisionControl.StartRunningOnce(captureImage, 0);
+            //Chup thanh cong se kich hoat ham VisionImageAvailable
         }
 
         private void btnRunOncePB_Click(object sender, RoutedEventArgs e)
@@ -343,7 +357,7 @@ namespace VisionProApplication
                 {
                     if (_isCameraOpened)
                     {
-                        
+     
                     }
                     else
                     {
@@ -419,6 +433,7 @@ namespace VisionProApplication
             txtNgCount.Text = "0";
             txtTotalCount.Text = "0";
         }
+
 
     }
 }

@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="Basic VisionPro Application" Height="720" Width="1280" Closing="Window_Closing">
     <Grid>
-        <TabControl x:Name="tabControl" Grid.ColumnSpan="2">
+        <TabControl x:Name="tabControl" Grid.ColumnSpan="2" SelectionChanged="tabControl_SelectionChanged">
             <TabItem Header="1. Connect" FontSize="20" MinHeight="35" MinWidth="120" GotFocus="TabItem1_GotFocus">
                 <Grid>
                     <Grid.ColumnDefinitions>
