@@ -28,8 +28,8 @@ namespace VisionProApplication
     /// </summary>
     public partial class MainWindow : Window
     {
-        private CogRecordDisplay CogDisplay { get; set; }
-        private CogRecordDisplay CogResultDisplay { get; set; }
+        private CogRecordDisplay _CogDisplay { get; set; }
+        private CogRecordDisplay _CogResultDisplay { get; set; }
         private readonly Camera _Camera;
         //private readonly Utility _Utility;
         private VisionControl _VisionControl;
@@ -37,12 +37,15 @@ namespace VisionProApplication
         private string FileJob = "";
         //private string modelName = "";
         private readonly List<string> _FileNameList = new List<string>();
-        private readonly CogToolBlockEditV2 _ctbEdit;
+        private readonly CogToolBlockEditV2 _CogToolBlockDisplay;
         private int _selectedIndex;
         private ImageManager imageManager = new ImageManager();
         private int _okCount;
         private int _ngCount;
         private int _totalCount;
+        private bool _isCameraOpened;
+        private bool _isPlaybackOpened;
+        bool _isRunning;
 
 
         public MainWindow()
@@ -50,14 +53,13 @@ namespace VisionProApplication
             _Camera = new Camera();
             //_Utility = new Utility();
             _Camera.VisionImageAvailable += _Camera_VisionImageAvailable;
-            
-            CogDisplay = new CogRecordDisplay();
-            CogResultDisplay = new CogRecordDisplay();
-            _ctbEdit = new CogToolBlockEditV2();
+            _CogDisplay = new CogRecordDisplay();
+            _CogResultDisplay = new CogRecordDisplay();
+            _CogToolBlockDisplay = new CogToolBlockEditV2();
             InitializeComponent();
-            WPFCogDisplay.Child = CogDisplay;
-            WPFCogTool.Child = _ctbEdit;
-            WPFResultDisplay.Child = CogResultDisplay;
+            WPFCogDisplay.Child = _CogDisplay;
+            WPFCogTool.Child = _CogToolBlockDisplay;
+            WPFResultDisplay.Child = _CogResultDisplay;
             btnLive.IsEnabled = false;
             btnTrigger.IsEnabled = false;
             btnRunOnce.IsEnabled = false;
@@ -68,12 +70,16 @@ namespace VisionProApplication
             _okCount = 0;
             _ngCount = 0;
             _totalCount = 0;
+            _isCameraOpened = false;
+            _isPlaybackOpened = false;
+            _isRunning = false;
+            btnStop.IsEnabled = false;
         }
         private void _Camera_VisionImageAvailable(object sender, Camera.VinsionImageAvailableEventArgs e)
         {
             if (_selectedIndex == 0)
             {
-                CogDisplay.Image = e.Image;
+                _CogDisplay.Image = e.Image;
             }
             else
             {
@@ -94,6 +100,7 @@ namespace VisionProApplication
                     btnConnect.Content = "⛓️‍💥 DISCONNECT";
                     btnTrigger.IsEnabled = true;
                     btnLive.IsEnabled = true;
+                    _isCameraOpened = true;
                 }
                 if (_VisionControl != null)
                 {
@@ -109,8 +116,8 @@ namespace VisionProApplication
                     btnTrigger.IsEnabled = false;
                     btnLive.IsEnabled = false;
                     btnConnect.Content = "🔗 CONNECT";
-                    CogDisplay = new CogRecordDisplay();
-                    WPFCogDisplay.Child = CogDisplay;
+                    _CogDisplay = new CogRecordDisplay();
+                    WPFCogDisplay.Child = _CogDisplay;
                     btnRunOnce.IsEnabled = false;
                 }
             }
@@ -126,7 +133,7 @@ namespace VisionProApplication
                 if (mFrameGrabbers.Count > 0)
                 {
                     _Camera.SetupRunContinuos(0);
-                    CogDisplay.StartLiveDisplay(_Camera.mCamera[0].mAcqFifo);
+                    _CogDisplay.StartLiveDisplay(_Camera.mCamera[0].mAcqFifo);
                     btnConnect.IsEnabled = false;
                     btnTrigger.IsEnabled = false;
                     btnRunOnce.IsEnabled = false;
@@ -143,7 +150,7 @@ namespace VisionProApplication
                 btnTrigger.IsEnabled = true;
                 btnConnect.IsEnabled = true;
                 btnRunOnce.IsEnabled = true;
-                CogDisplay.StopLiveDisplay();
+                _CogDisplay.StopLiveDisplay();
                 //Reset CogDisplay
                 //CogDisplay = new CogRecordDisplay();
                 //WPFCogDisplay.Child = CogDisplay;
@@ -179,7 +186,7 @@ namespace VisionProApplication
                     _VisionControl = new VisionControl(ref _mtoolblockManager);
                     _VisionControl.VisionControlUserResultAvailable += _VisionControl_VisionControlUserResultAvailable;
                     _VisionControl.AttachToJobManager(true);
-                    _ctbEdit.Subject = Job;
+                    _CogToolBlockDisplay.Subject = Job;
 
                 }
                 catch (Exception ex)
@@ -197,7 +204,6 @@ namespace VisionProApplication
                 btnSaveJob.IsEnabled = true;
             }
         }
-
 
         private void TxtExposureNum_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
@@ -263,6 +269,7 @@ namespace VisionProApplication
                     {
                         ShowImage();
                         btnNextImg.IsEnabled = true;
+                        _isPlaybackOpened = true;
                         if (_VisionControl != null)
                         {
                             btnRunOncePB.IsEnabled = true;
@@ -272,9 +279,10 @@ namespace VisionProApplication
                 }
             }
         }
+
         private void ShowImage()
         {
-            CogDisplay.Image = imageManager.ConvertBitmapToCogImage(imageManager.GetCurrentImage());
+            _CogDisplay.Image = imageManager.ConvertBitmapToCogImage(imageManager.GetCurrentImage());
             txtImageName.Text = imageManager.GetCurrentFileName();
             txtImageCount.Text = "File Name" + " (" + (imageManager.GetCurrentIndex() + 1).ToString() + "/" + imageManager.GetCount().ToString() + ")";
             if (imageManager.GetCurrentIndex() == imageManager.GetCount() - 1)
@@ -307,9 +315,43 @@ namespace VisionProApplication
             ShowImage();
         }
 
-        private void btnStart_Click(object sender, RoutedEventArgs e)
+
+        private void btnStop_Click(object sender, RoutedEventArgs e)
         {
-            _VisionControl.StartRunningOnce(imageManager.GetCurrentImage(), 0);
+            _isRunning = false;
+            btnStart.IsEnabled = true;
+            btnStop.IsEnabled = false;
+            btnReset.IsEnabled = true;
+        }
+
+        private async void btnStart_Click(object sender, RoutedEventArgs e)
+        {
+            _isRunning = true;
+            btnStop.IsEnabled = true;
+            btnStart.IsEnabled = false;
+            btnReset.IsEnabled = false;
+            await Task.Run(() =>
+            {
+                while (_isRunning)
+                {
+                    if (_isCameraOpened)
+                    {
+                        
+                    }
+                    else
+                    {
+                        if (_isPlaybackOpened)
+                        {
+                            foreach (ImageItem item in imageManager.GetImageItemList())
+                            {
+                                _VisionControl.StartRunningOnce(item.Image, 0);
+                                Task.Delay(1000).Wait();
+                            }
+                        }
+                    }
+                    
+                }
+            });
         }
 
         private void _VisionControl_VisionControlUserResultAvailable(object sender, VisionControl.VisionControlUserResultAvailableEventArgs e)
@@ -320,29 +362,31 @@ namespace VisionProApplication
                 var jobPass = e.JobStatus.Result;
                 if (result != null)
                 {
-                    //bool totalResult = (bool)result["TotalResult"].Value;
-                    CogResultDisplay.Record = e.LastRunRecord.SubRecords[0];
-                    //CogResultDisplay.AutoFit = true;
+                    _CogResultDisplay.Record = e.LastRunRecord.SubRecords[0];
+
                     if (jobPass == CogToolResultConstants.Accept)
                     {
                         _okCount++;
                     }
-                    else 
+                    else
                     {
                         _ngCount++;
                     }
                     _totalCount = _okCount + _ngCount;
-                    txtOkCount.Text = _okCount.ToString();
-                    txtNgCount.Text = _ngCount.ToString();
-                    txtTotalCount.Text = _totalCount.ToString();
-                    
+
+                    // Cập nhật UI trên UI thread
+                    Dispatcher.Invoke(() =>
+                    {
+                        txtOkCount.Text = _okCount.ToString();
+                        txtNgCount.Text = _ngCount.ToString();
+                        txtTotalCount.Text = _totalCount.ToString();
+                    });
                 }
             }
             catch (Exception ex)
             {
                 System.Windows.MessageBox.Show(ex.ToString());
             }
-
         }
 
         private void TabItem1_GotFocus(object sender, RoutedEventArgs e)
@@ -365,5 +409,6 @@ namespace VisionProApplication
             txtNgCount.Text = "0";
             txtTotalCount.Text = "0";
         }
+
     }
 }

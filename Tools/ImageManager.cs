@@ -8,10 +8,10 @@ using System.Windows.Media.Imaging;
 
 public readonly struct ImageItem
 {
-    public BitmapImage Image { get; }
+    public Bitmap Image { get; }
     public string FileName { get; }
 
-    public ImageItem(BitmapImage image, string fileName)
+    public ImageItem(Bitmap image, string fileName)
     {
         Image = image;
         FileName = fileName;
@@ -38,7 +38,7 @@ public class ImageManager
                 BitmapImage bitmap = new BitmapImage(new Uri(file));
                 string fileName = Path.GetFileName(file);
 
-                ImageList.Add(new ImageItem(bitmap, fileName));
+                ImageList.Add(new ImageItem(ConvertBitmapImageToBitmap(bitmap), fileName));
             }
         }
         Count = ImageList.Count;
@@ -46,6 +46,11 @@ public class ImageManager
         {
             CurrentIndex = 0;
         }
+    }
+
+    public List<ImageItem> GetImageItemList()
+    {
+        return ImageList;
     }
     public int GetCount()
     {
@@ -55,7 +60,7 @@ public class ImageManager
     {
         if (Count > 0)
         {
-            return BitmapImageToBitmap(ImageList[CurrentIndex].Image);
+            return ImageList[CurrentIndex].Image;
         }
         else
         {
@@ -66,7 +71,7 @@ public class ImageManager
     {
         if (Count > 0)
         {
-            return (ImageList[CurrentIndex].FileName);
+            return ImageList[CurrentIndex].FileName;
         }
         else
         {
@@ -110,7 +115,7 @@ public class ImageManager
         }
     }
 
-    private static Bitmap BitmapImageToBitmap(BitmapImage bitmapImage)
+    private static Bitmap ConvertBitmapImageToBitmap(BitmapImage bitmapImage)
     {
         using (MemoryStream outStream = new MemoryStream())
         {

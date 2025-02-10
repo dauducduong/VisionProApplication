@@ -73,8 +73,8 @@
                     <Grid Grid.Column="0" Background="Beige">
                         <StackPanel Margin="5">
                             <TextBlock Text="Control Panel" Margin="0 0 0 5"  HorizontalAlignment="Center"></TextBlock>
-                            <Button x:Name="btnStart" Content="▶️ START" FontSize="15"  MinHeight="40" Margin="2 2 2 2" Click="btnStart_Click"></Button>
-                            <Button x:Name="btnStop" Content="⏹️ STOP" FontSize="15" MinHeight="40" Margin="2 2 2 2"/>
+                            <Button x:Name="btnStart" Content="▶️ START" FontSize="15"  MinHeight="40" Margin="2 2 2 2" Click="btnStart_Click" Background="LimeGreen"></Button>
+                            <Button x:Name="btnStop" Content="⏹️ STOP" FontSize="15" MinHeight="40" Margin="2 2 2 2" Click="btnStop_Click" Background="Red"/>
                             <Button x:Name="btnReset" Content="🔃 RESET" FontSize="15" MinHeight="40" Margin="2 2 2 2" Click="btnReset_Click"/>
                             <TextBlock Text="Data Monitoring" Margin="0 5 0 5" TextAlignment="Justify" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             <Grid Height="Auto" Background="LightGray">
