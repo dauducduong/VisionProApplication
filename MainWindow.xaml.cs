@@ -46,6 +46,7 @@ namespace VisionProApplication
         private bool _isCameraOpened;
         private bool _isPlaybackOpened;
         bool _isRunning;
+        bool _isJobLoaded;
 
 
         public MainWindow()
@@ -73,7 +74,9 @@ namespace VisionProApplication
             _isCameraOpened = false;
             _isPlaybackOpened = false;
             _isRunning = false;
+            _isJobLoaded = false;
             btnStop.IsEnabled = false;
+            btnStart.IsEnabled = false;
         }
         private void _Camera_VisionImageAvailable(object sender, Camera.VinsionImageAvailableEventArgs e)
         {
@@ -102,9 +105,10 @@ namespace VisionProApplication
                     btnLive.IsEnabled = true;
                     _isCameraOpened = true;
                 }
-                if (_VisionControl != null)
+                if (_isJobLoaded)
                 {
                     btnRunOnce.IsEnabled = true;
+                    btnStart.IsEnabled=true;
                 }
             }
             else
@@ -187,19 +191,21 @@ namespace VisionProApplication
                     _VisionControl.VisionControlUserResultAvailable += _VisionControl_VisionControlUserResultAvailable;
                     _VisionControl.AttachToJobManager(true);
                     _CogToolBlockDisplay.Subject = Job;
-
+                    _isJobLoaded = true;
                 }
                 catch (Exception ex)
                 {
                     System.Windows.MessageBox.Show(ex.ToString());
                 }
-                if (_Camera.listCam.Count > 0)
+                if (_isCameraOpened)
                 {
                     btnRunOnce.IsEnabled = true;
+                    btnStart.IsEnabled = true;
                 }
-                if (imageManager.GetCount() > 0)
+                if (_isPlaybackOpened)
                 {
                     btnRunOncePB.IsEnabled = true;
+                    btnStart.IsEnabled = true;
                 }
                 btnSaveJob.IsEnabled = true;
             }
@@ -270,9 +276,10 @@ namespace VisionProApplication
                         ShowImage();
                         btnNextImg.IsEnabled = true;
                         _isPlaybackOpened = true;
-                        if (_VisionControl != null)
+                        if (_isJobLoaded)
                         {
                             btnRunOncePB.IsEnabled = true;
+                            btnStart.IsEnabled = true;
                         }
                     }
                     
@@ -345,7 +352,7 @@ namespace VisionProApplication
                             foreach (ImageItem item in imageManager.GetImageItemList())
                             {
                                 _VisionControl.StartRunningOnce(item.Image, 0);
-                                Task.Delay(1000).Wait();
+                                Task.Delay(200).Wait();
                             }
                         }
                     }
@@ -356,36 +363,39 @@ namespace VisionProApplication
 
         private void _VisionControl_VisionControlUserResultAvailable(object sender, VisionControl.VisionControlUserResultAvailableEventArgs e)
         {
-            var result = e.Result;
-            try
+            if (_isRunning) 
             {
-                var jobPass = e.JobStatus.Result;
-                if (result != null)
+                var result = e.Result;
+                try
                 {
-                    _CogResultDisplay.Record = e.LastRunRecord.SubRecords[0];
+                    var jobPass = e.JobStatus.Result;
+                    if (result != null)
+                    {
+                        _CogResultDisplay.Record = e.LastRunRecord.SubRecords[0];
 
-                    if (jobPass == CogToolResultConstants.Accept)
-                    {
-                        _okCount++;
-                    }
-                    else
-                    {
-                        _ngCount++;
-                    }
-                    _totalCount = _okCount + _ngCount;
+                        if (jobPass == CogToolResultConstants.Accept)
+                        {
+                            _okCount++;
+                        }
+                        else
+                        {
+                            _ngCount++;
+                        }
+                        _totalCount = _okCount + _ngCount;
 
-                    // Cập nhật UI trên UI thread
-                    Dispatcher.Invoke(() =>
-                    {
-                        txtOkCount.Text = _okCount.ToString();
-                        txtNgCount.Text = _ngCount.ToString();
-                        txtTotalCount.Text = _totalCount.ToString();
-                    });
+                        // Cập nhật UI trên UI thread
+                        Dispatcher.Invoke(() =>
+                        {
+                            txtOkCount.Text = _okCount.ToString();
+                            txtNgCount.Text = _ngCount.ToString();
+                            txtTotalCount.Text = _totalCount.ToString();
+                        });
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                System.Windows.MessageBox.Show(ex.ToString());
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show(ex.ToString());
+                }
             }
         }
 
