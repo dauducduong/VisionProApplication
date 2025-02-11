@@ -170,10 +170,21 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="LoginWindow.xaml.cs">
+      <DependentUpon>LoginWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SettingWindow.xaml.cs">
+      <DependentUpon>SettingWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Tools\ImageManager.cs" />
     <Compile Include="Tools\Camera.cs" />
+    <Compile Include="Tools\SettingData.cs" />
     <Compile Include="Tools\Utility.cs" />
     <Compile Include="Tools\VisionControl.cs" />
+    <Page Include="LoginWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -186,6 +197,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="SettingWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -226,6 +241,12 @@
     <Resource Include="TestRun Material\images\7.bmp" />
     <Resource Include="TestRun Material\images\8.bmp" />
     <Resource Include="TestRun Material\images\9.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icon\LogoWindowIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icon\SettingWindowIcon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

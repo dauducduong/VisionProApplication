@@ -2,6 +2,7 @@
 using Cognex.VisionPro.ImageFile;
 using Cognex.VisionPro.QuickBuild.Implementation.Internal;
 using Cognex.VisionPro.ToolBlock;
+using NPOI.OpenXmlFormats.Vml;
 using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using VisionProApplication.Tools;
 
 namespace VisionProApplication
 {
@@ -46,6 +48,8 @@ namespace VisionProApplication
         private bool _isPlaybackOpened;
         bool _isRunning;
         bool _isJobLoaded;
+        int _savingOption;
+        string _savingDir;
 
 
         public MainWindow()
@@ -69,12 +73,15 @@ namespace VisionProApplication
             _okCount = 0;
             _ngCount = 0;
             _totalCount = 0;
+            _savingOption = 0;
+            _savingDir = "";
             _isCameraOpened = false;
             _isPlaybackOpened = false;
             _isRunning = false;
             _isJobLoaded = false;
             btnStop.IsEnabled = false;
             btnStart.IsEnabled = false;
+            btnSetting.IsEnabled = false;
         }
         private void _Camera_VisionImageAvailable(object sender, Camera.VinsionImageAvailableEventArgs e)
         {
@@ -333,7 +340,38 @@ namespace VisionProApplication
                 btnPrevImg.IsEnabled = true;
             }
         }
-
+        
+        private void SaveResultImage(ICogImage cogImage)
+        {
+            if (cogImage != null)
+            {
+                try
+                {
+                    //Chuyển sang định dạng bitmap
+                    CogImage24PlanarColor imageColor = cogImage as CogImage24PlanarColor;
+                    Bitmap bitmapImage = null;
+                    if (imageColor != null)
+                    {
+                        bitmapImage = imageColor.ToBitmap();
+                    }
+                    else
+                    {
+                        CogImage8Grey imageGrey = cogImage as CogImage8Grey;
+                        if (imageGrey != null)
+                        {
+                            bitmapImage = imageGrey.ToBitmap();
+                        }
+                    }
+                    //Lưu file
+                    //bitmapImage.Save();
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show(ex.ToString());
+                }
+                
+            }
+        }
         private void btnPrevImg_Click(object sender, RoutedEventArgs e)
         {
             imageManager.SetPrevIndex();
@@ -393,6 +431,7 @@ namespace VisionProApplication
             if (_isRunning) //Nếu đang ở chế độ RUN
             {
                 var result = e.Result;
+                ICogImage cogImage = e.LastRunRecord.SubRecords[0].Content as ICogImage;
                 try
                 {
                     var jobPass = e.JobStatus.Result;
@@ -448,5 +487,42 @@ namespace VisionProApplication
             txtTotalCount.Text = "0";
         }
 
+        private void btnLogin_Click(object sender, RoutedEventArgs e)
+        {
+            if (btnLogin.Content.ToString() == "🔑 LOG IN")
+            {
+                LoginWindow loginWindow = new LoginWindow();
+                loginWindow.ShowDialog();
+                if (loginWindow.IsAuthenticated)
+                {
+                    btnSetting.IsEnabled = true;
+                    btnLogin.Content = "🔒 LOG OUT";
+                }
+            }
+            else
+            {
+                MessageBoxResult result = System.Windows.MessageBox.Show("Are you sure you want to log out?", "Log Out Confirmation",
+                                             MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.Yes)
+                {
+                    btnSetting.IsEnabled = false;
+                    btnLogin.Content = "🔑 LOG IN";
+                }
+                
+            }
+        }
+
+        private void btnSetting_Click(object sender, RoutedEventArgs e)
+        {
+            SettingWindow settingWindow = new SettingWindow();
+            settingWindow.SavingOptionChanged += OnSettingChanged; //Khi nào ấn Apply ở cửa sổ Setting thì hàm OnSettingChanged được kích hoạt
+            settingWindow.ShowDialog();
+        }
+
+        private void OnSettingChanged(SettingData data)
+        {
+            _savingOption = data.SavingOption;
+            _savingDir = data.SavingDir;
+        }
     }
 }

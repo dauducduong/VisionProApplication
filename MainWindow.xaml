@@ -6,7 +6,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:VisionProApplication"
         mc:Ignorable="d"
-        Title="Basic VisionPro Application" Height="720" Width="1280" Closing="Window_Closing">
+        Title="Basic VisionPro Application" Height="720" Width="1280" Closing="Window_Closing" WindowStartupLocation="CenterScreen">
     <Grid>
         <TabControl x:Name="tabControl" Grid.ColumnSpan="2" SelectionChanged="tabControl_SelectionChanged">
             <TabItem Header="1. Connect" FontSize="20" MinHeight="35" MinWidth="120" GotFocus="TabItem1_GotFocus">
@@ -101,6 +101,9 @@
                                 <Label Height="50" FontSize="25" HorizontalAlignment="Center" VerticalContentAlignment="Center">Total</Label>
                                 <TextBlock x:Name="txtTotalCount" Grid.Column="1" Text="0" FontSize="20" VerticalAlignment="Center"  HorizontalAlignment="Center"></TextBlock>
                             </Grid>
+                            <TextBlock Text="Option" Margin="0 5 0 5" TextAlignment="Justify" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Button x:Name="btnLogin" Content="🔑 LOG IN" FontSize="15"  MinHeight="40" Margin="2 2 2 2" Click="btnLogin_Click"></Button>
+                            <Button x:Name="btnSetting" Content="🛠️ SETTING" FontSize="15"  MinHeight="40" Margin="2 2 2 2" Click="btnSetting_Click"></Button>
                         </StackPanel>
                     </Grid>
                     <Grid Grid.Column="1" Background="CadetBlue">
