@@ -2,6 +2,7 @@
 using Cognex.VisionPro.ImageFile;
 using Cognex.VisionPro.QuickBuild.Implementation.Internal;
 using Cognex.VisionPro.ToolBlock;
+using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -412,8 +413,8 @@ namespace VisionProApplication
                         // Cập nhật UI trên UI thread
                         Dispatcher.Invoke(() =>
                         {
-                            txtOkCount.Text = _okCount.ToString();
-                            txtNgCount.Text = _ngCount.ToString();
+                            txtOkCount.Text = _okCount.ToString() + "(" + Math.Round(((_okCount / (double)_totalCount) * 100), 2).ToString() + "%)";
+                            txtNgCount.Text = _ngCount.ToString() + "(" + (100 - Math.Round(((_okCount / (double)_totalCount) * 100), 2)).ToString() + "%)";
                             txtTotalCount.Text = _totalCount.ToString();
                         });
                     }

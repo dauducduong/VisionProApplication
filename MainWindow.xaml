@@ -79,27 +79,27 @@
                             <TextBlock Text="Data Monitoring" Margin="0 5 0 5" TextAlignment="Justify" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             <Grid Height="Auto" Background="LightGray">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="65"></ColumnDefinition>
+                                    <ColumnDefinition ></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="OK" Foreground="LimeGreen" Width="100" FontSize="35" HorizontalAlignment="Center"></TextBlock>
-                                <TextBlock x:Name="txtOkCount" Grid.Column="1" Text="0" FontSize="25" VerticalAlignment="Center"  HorizontalAlignment="Center"></TextBlock>
+                                <Label Foreground="LimeGreen" Grid.Column="0"  Height="50" FontSize="25" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">OK</Label>
+                                <TextBlock x:Name="txtOkCount" Grid.Column="1" Text="0" FontSize="20" VerticalAlignment="Center"  HorizontalAlignment="Center"></TextBlock>
                             </Grid>
                             <Grid Height="Auto" Background="LightGray">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="65"></ColumnDefinition>
+                                    <ColumnDefinition ></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="NG" Foreground="Red" Width="100" FontSize="35" HorizontalAlignment="Center"></TextBlock>
-                                <TextBlock x:Name="txtNgCount" Grid.Column="1" Text="0" FontSize="25" VerticalAlignment="Center"  HorizontalAlignment="Center"></TextBlock>
+                                <Label Foreground="Red" Grid.Column="0" Height="50" FontSize="25" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">NG</Label>
+                                <TextBlock x:Name="txtNgCount" Grid.Column="1" Text="0" FontSize="20" VerticalAlignment="Center"  HorizontalAlignment="Center"></TextBlock>
                             </Grid>
                             <Grid Height="Auto" Background="LightGray">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="65"></ColumnDefinition>
+                                    <ColumnDefinition></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="TOTAL" Width="100" FontSize="35" HorizontalAlignment="Center"></TextBlock>
-                                <TextBlock x:Name="txtTotalCount" Grid.Column="1" Text="0" FontSize="25" VerticalAlignment="Center"  HorizontalAlignment="Center"></TextBlock>
+                                <Label Height="50" FontSize="25" HorizontalAlignment="Center" VerticalContentAlignment="Center">Total</Label>
+                                <TextBlock x:Name="txtTotalCount" Grid.Column="1" Text="0" FontSize="20" VerticalAlignment="Center"  HorizontalAlignment="Center"></TextBlock>
                             </Grid>
                         </StackPanel>
                     </Grid>
