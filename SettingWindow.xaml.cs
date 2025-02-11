@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -14,12 +15,15 @@ namespace VisionProApplication
     {
         private int _savingOption;
         private string _savingDir;
+        private string solutionPath;
         public SettingWindow()
         {
             InitializeComponent();
             _savingOption = 0;
-            _savingDir = "C:/Basic VisionPro Application/Run";
+            _savingDir = "";
             btnChooseDir.IsEnabled = false;
+            solutionPath = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetCurrentDirectory())?.FullName)?.FullName)?.FullName;
+            txtCurrentDir.Text = "Current saving directory: " + solutionPath;
         }
 
         public event Action<SettingData> SavingOptionChanged;
@@ -48,12 +52,29 @@ namespace VisionProApplication
                 if (_savingOption != 0)
                 {
                     btnChooseDir.IsEnabled = true;
+                    string folderPath = "";
+                    switch (_savingOption)
+                    {
+                        case 1: 
+                            folderPath = "Run\\All Images";
+                            break;
+                        case 2:
+                            folderPath = "Run\\OK Images";
+                            break;
+                        case 3:
+                            folderPath = "Run\\NG Images";
+                            break;
+                    }
+                    _savingDir = Path.Combine(solutionPath, folderPath);
+                    txtCurrentDir.Text = "Current saving directory: " + _savingDir;
                 }
                 else
                 {
                     if (btnChooseDir != null)
                     {
                         btnChooseDir.IsEnabled = false;
+                        _savingDir = Path.Combine(solutionPath, "Run");
+                        txtCurrentDir.Text = "Current saving directory: " + _savingDir;
                     }
                 }
             }

@@ -1,28 +1,33 @@
-﻿using Cognex.VisionPro;
+﻿using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using System.Windows.Forms.Integration;
+using System.Windows;
+using System.Windows.Interop;
+using Cognex.VisionPro;
 using Cognex.VisionPro.ImageFile;
 using Cognex.VisionPro.QuickBuild.Implementation.Internal;
 using Cognex.VisionPro.ToolBlock;
 using NPOI.OpenXmlFormats.Vml;
 using NPOI.SS.Formula.Functions;
-using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using VisionProApplication.Tools;
+using Cognex.VisionPro.Display;
+
 
 namespace VisionProApplication
 {
@@ -31,6 +36,21 @@ namespace VisionProApplication
     /// </summary>
     public partial class MainWindow : Window
     {
+        #region Win32 API Functions
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern IntPtr GetDC(IntPtr hWnd);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
+
+        [DllImport("gdi32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool BitBlt(IntPtr hdcDest, int xDest, int yDest, int wDest, int hDest,
+                                         IntPtr hdcSrc, int xSrc, int ySrc, int rop);
+
+        const int SRCCOPY = 0x00CC0020;
+        #endregion
+
         private CogRecordDisplay _CogDisplay { get; set; }
         private CogRecordDisplay _CogResultDisplay { get; set; }
         private readonly Camera _Camera;
@@ -341,37 +361,29 @@ namespace VisionProApplication
             }
         }
         
-        private void SaveResultImage(ICogImage cogImage)
+        private void SaveResultImage()
         {
-            if (cogImage != null)
+            if (!Directory.Exists(_savingDir)) 
             {
-                try
-                {
-                    //Chuyển sang định dạng bitmap
-                    CogImage24PlanarColor imageColor = cogImage as CogImage24PlanarColor;
-                    Bitmap bitmapImage = null;
-                    if (imageColor != null)
-                    {
-                        bitmapImage = imageColor.ToBitmap();
-                    }
-                    else
-                    {
-                        CogImage8Grey imageGrey = cogImage as CogImage8Grey;
-                        if (imageGrey != null)
-                        {
-                            bitmapImage = imageGrey.ToBitmap();
-                        }
-                    }
-                    //Lưu file
-                    //bitmapImage.Save();
-                }
-                catch (Exception ex)
-                {
-                    System.Windows.MessageBox.Show(ex.ToString());
-                }
-                
+                Directory.CreateDirectory(_savingDir);
+            }
+
+            if (_CogResultDisplay == null) throw new ArgumentNullException(nameof(_CogResultDisplay));
+            try
+            {
+                // Chụp ảnh từ Display (bao gồm cả đồ họa vẽ)
+                Bitmap bitmap = (Bitmap)_CogResultDisplay.CreateContentBitmap(CogDisplayContentBitmapConstants.Image);
+                // Lưu ảnh chụp lại
+                int count = Directory.GetFiles(_savingDir, "image*.bmp").Length + 1;
+                string filePath = System.IO.Path.Combine(_savingDir, $"image{count}.bmp");
+                bitmap.Save(filePath, ImageFormat.Bmp);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.ToString());
             }
         }
+
         private void btnPrevImg_Click(object sender, RoutedEventArgs e)
         {
             imageManager.SetPrevIndex();
@@ -431,7 +443,6 @@ namespace VisionProApplication
             if (_isRunning) //Nếu đang ở chế độ RUN
             {
                 var result = e.Result;
-                ICogImage cogImage = e.LastRunRecord.SubRecords[0].Content as ICogImage;
                 try
                 {
                     var jobPass = e.JobStatus.Result;
@@ -449,6 +460,20 @@ namespace VisionProApplication
                             _ngCount++;
                         }
                         _totalCount = _okCount + _ngCount;
+                        //Save file
+                        if (_savingOption != 0)
+                        {
+                            switch (_savingOption)
+                            {
+                                case 1:
+                                    SaveResultImage();
+                                    break;
+                                case 2 when jobPass == CogToolResultConstants.Accept:
+                                case 3 when jobPass == CogToolResultConstants.Reject:
+                                    SaveResultImage();
+                                    break;
+                            }
+                        }
                         // Cập nhật UI trên UI thread
                         Dispatcher.Invoke(() =>
                         {

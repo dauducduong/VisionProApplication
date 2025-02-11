@@ -26,7 +26,7 @@ namespace VisionProApplication
             public CogToolBlockTerminalCollection Result;
             public ICogRunStatus JobStatus;
             public ICogRecord LastRunRecord;
-
+            
             public VisionControlUserResultAvailableEventArgs(string jobName, CogToolBlockTerminalCollection result, ICogRunStatus jobStatus, ICogRecord lastRunRecord)
             {
                 JobName = jobName;

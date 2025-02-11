@@ -45,7 +45,7 @@
             </Border>
         </Grid>
         <Grid Grid.Row="2">
-            <TextBlock x:Name="txtCurrentDir" FontSize="15" VerticalAlignment="Center" >Current saving directory: C:\Basic VisionPro Application\Run</TextBlock>
+            <TextBlock x:Name="txtCurrentDir" FontSize="12" VerticalAlignment="Center" >Current saving directory: C:\Basic VisionPro Application\Run</TextBlock>
         </Grid>
         <Grid Grid.Row="4">
             <Grid.ColumnDefinitions>
