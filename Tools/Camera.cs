@@ -120,7 +120,6 @@ namespace VisionProApplication
                 {
                     GC.Collect();
                     numAcqs[AcqFifo.FrameGrabber.SerialNumber] = 0;
-
                 }
 
             }

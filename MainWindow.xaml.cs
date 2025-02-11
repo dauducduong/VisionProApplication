@@ -31,11 +31,9 @@ namespace VisionProApplication
         private CogRecordDisplay _CogDisplay { get; set; }
         private CogRecordDisplay _CogResultDisplay { get; set; }
         private readonly Camera _Camera;
-        //private readonly Utility _Utility;
         private VisionControl _VisionControl;
         private CogToolBlock Job;
         private string FileJob = "";
-        //private string modelName = "";
         private readonly List<string> _FileNameList = new List<string>();
         private readonly CogToolBlockEditV2 _CogToolBlockDisplay;
         private int _selectedIndex;
@@ -52,7 +50,6 @@ namespace VisionProApplication
         public MainWindow()
         {
             _Camera = new Camera();
-            //_Utility = new Utility();
             _Camera.VisionImageAvailable += _Camera_VisionImageAvailable;
             _CogDisplay = new CogRecordDisplay();
             _CogResultDisplay = new CogRecordDisplay();
@@ -80,21 +77,22 @@ namespace VisionProApplication
         }
         private void _Camera_VisionImageAvailable(object sender, Camera.VinsionImageAvailableEventArgs e)
         {
-            if (!_isRunning) 
+            //Khi camera trigger và chụp được 1 ảnh mới e.Image
+            if (!_isRunning)  //Nếu không ở chế độ 3. Run
             {
-                if (_selectedIndex == 0)
+                if (_selectedIndex == 0) //Đang trigger cam để lấy ảnh test ở 1. Connect
                 {
                     _CogDisplay.Image = e.Image;
                 }
                 else
                 {
-                    if (_selectedIndex == 1) 
+                    if (_selectedIndex == 1) //Thử chạy tool block với 1 ảnh trigger từ cam ở 2. Program
                     {
                         _VisionControl.StartRunningOnce(e.Image.ToBitmap(), 0);
                     }
                 }
             }
-            else
+            else //Ở chế độ Run
             {
                 _VisionControl.StartRunningOnce(e.Image.ToBitmap(), 0);
             }
@@ -103,9 +101,9 @@ namespace VisionProApplication
 
         private void btnConnect_Click(object sender, RoutedEventArgs e)
         {
-            if (btnConnect.Content is string buttonText && buttonText == "🔗 CONNECT")
+            if (btnConnect.Content is string buttonText && buttonText == "🔗 CONNECT") //Ấn CONNECT
             {
-                _Camera.DeviceListAcq();
+                _Camera.DeviceListAcq(); //Kết nối camera
                 if (_Camera.listCam.Count > 0)
                 {
                     txtCamModel.Text = _Camera.listCam.First().Key;
@@ -114,16 +112,17 @@ namespace VisionProApplication
                     btnTrigger.IsEnabled = true;
                     btnLive.IsEnabled = true;
                     _isCameraOpened = true;
-                }
-                if (_isJobLoaded)
-                {
-                    btnRunOnce.IsEnabled = true;
-                    btnStart.IsEnabled=true;
+                    //Nếu đã load tool block, enable các nút Run, Start
+                    if (_isJobLoaded) 
+                    {
+                        btnRunOnce.IsEnabled = true;
+                        btnStart.IsEnabled = true;
+                    }
                 }
             }
             else
             {
-                if (_Camera != null)
+                if (_Camera != null) //Ấn DISCONNECT
                 {
                     _Camera.DestroyCamera(0);
                     txtCamModel.Clear();
@@ -133,7 +132,9 @@ namespace VisionProApplication
                     _CogDisplay = new CogRecordDisplay();
                     WPFCogDisplay.Child = _CogDisplay;
                     btnRunOnce.IsEnabled = false;
-                    if (!_isPlaybackOpened && !_isJobLoaded)
+                    _isCameraOpened = false;
+                    //Nếu chưa load ảnh thì disable nút Start
+                    if (!_isPlaybackOpened) 
                     {
                         btnStart.IsEnabled = false;
                     }
@@ -145,10 +146,10 @@ namespace VisionProApplication
 
         private void btnLive_Click(object sender, RoutedEventArgs e)
         {
+            //Bật LIVE
             if (btnLive.Background is SolidColorBrush brush && brush.Color == System.Windows.Media.Color.FromArgb(0xFF, 0xDD, 0xDD, 0xDD))
             {
-                CogFrameGrabbers mFrameGrabbers = new CogFrameGrabbers();
-                if (mFrameGrabbers.Count > 0)
+                if (_isCameraOpened)
                 {
                     _Camera.SetupRunContinuos(0);
                     _CogDisplay.StartLiveDisplay(_Camera.mCamera[0].mAcqFifo);
@@ -162,6 +163,7 @@ namespace VisionProApplication
                     System.Windows.MessageBox.Show("No camera found!");
                 }
             }
+            //Tắt LIVE
             else
             {
                 btnLive.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0xFF, 0xDD, 0xDD, 0xDD));
@@ -189,7 +191,7 @@ namespace VisionProApplication
         {
             OpenFileDialog open = new OpenFileDialog
             {
-                Filter = "JobFile |*.vpp"
+                Filter = "JobFile |*.vpp" //Chỉ load file lưu CogToolBlock
             };
             if (open.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -206,22 +208,22 @@ namespace VisionProApplication
                     _VisionControl.AttachToJobManager(true);
                     _CogToolBlockDisplay.Subject = Job;
                     _isJobLoaded = true;
+                    if (_isCameraOpened) //Nếu đã kết nối cam
+                    {
+                        btnRunOnce.IsEnabled = true;
+                        btnStart.IsEnabled = true;
+                    }
+                    if (_isPlaybackOpened) //Nếu đã load ảnh
+                    {
+                        btnRunOncePB.IsEnabled = true;
+                        btnStart.IsEnabled = true;
+                    }
+                    btnSaveJob.IsEnabled = true;
                 }
                 catch (Exception ex)
                 {
                     System.Windows.MessageBox.Show(ex.ToString());
-                }
-                if (_isCameraOpened)
-                {
-                    btnRunOnce.IsEnabled = true;
-                    btnStart.IsEnabled = true;
-                }
-                if (_isPlaybackOpened)
-                {
-                    btnRunOncePB.IsEnabled = true;
-                    btnStart.IsEnabled = true;
-                }
-                btnSaveJob.IsEnabled = true;
+                } 
             }
         }
 
@@ -233,19 +235,23 @@ namespace VisionProApplication
         private void btnRunOnce_Click(object sender, RoutedEventArgs e)
         {
             _Camera.RunOnce(0);
-            //Chup thanh cong se kich hoat ham VisionImageAvailable
+            //Chụp thành công sẽ kích hoạt hàm _Camera_VisionImageAvailable
         }
 
         private void btnRunOncePB_Click(object sender, RoutedEventArgs e)
         {
+            //Chạy toolblock 1 lần với ảnh playback. Ảnh dùng để chạy là ảnh tiếp theo so với ảnh đang chọn ở 1. Connect
+            //Nếu ảnh hiện tại là ảnh cuối của list thì quay về ảnh đầu
             if (imageManager.GetCurrentIndex() == imageManager.GetCount() - 1)
             {
                 imageManager.ResetIndex();
             }
+            //Nếu không phải ảnh cuối thì nhảy đến ảnh kế tiếp
             else
             {
                 imageManager.SetNextIndex();
             }
+            //Chạy toolblock
             _VisionControl.StartRunningOnce(imageManager.GetCurrentImage(), 0);
         }
 
@@ -260,6 +266,7 @@ namespace VisionProApplication
 
         private void btnSaveJob_Click(object sender, RoutedEventArgs e)
         {
+            //Lưu toolblock
             SaveFileDialog save = new SaveFileDialog
             {
                 Filter = "JobFile |*.vpp"
@@ -290,7 +297,7 @@ namespace VisionProApplication
                         ShowImage();
                         btnNextImg.IsEnabled = true;
                         _isPlaybackOpened = true;
-                        if (_isJobLoaded)
+                        if (_isJobLoaded)   //Nếu đã load toolblock
                         {
                             btnRunOncePB.IsEnabled = true;
                             btnStart.IsEnabled = true;
@@ -303,9 +310,11 @@ namespace VisionProApplication
 
         private void ShowImage()
         {
+            //Hiển thị ảnh, tên file, thứ tự trong list (Chỉ dùng cho PLAYBACK)
             _CogDisplay.Image = imageManager.ConvertBitmapToCogImage(imageManager.GetCurrentImage());
             txtImageName.Text = imageManager.GetCurrentFileName();
             txtImageCount.Text = "File Name" + " (" + (imageManager.GetCurrentIndex() + 1).ToString() + "/" + imageManager.GetCount().ToString() + ")";
+            //Nếu đang là ảnh cuối của list thì disable nút next ảnh, còn ảnh đầu thì disable nút back ảnh
             if (imageManager.GetCurrentIndex() == imageManager.GetCount() - 1)
             {
                 btnNextImg.IsEnabled = false;
@@ -336,7 +345,6 @@ namespace VisionProApplication
             ShowImage();
         }
 
-
         private void btnStop_Click(object sender, RoutedEventArgs e)
         {
             _isRunning = false;
@@ -351,17 +359,20 @@ namespace VisionProApplication
             btnStop.IsEnabled = true;
             btnStart.IsEnabled = false;
             btnReset.IsEnabled = false;
+            //Chương trình
             await Task.Run(() =>
             {
                 while (_isRunning)
                 {
+                    //Nếu cam đang kết nối thì chạy chương trình với cam, còn không thì chạy với ảnh PLAYBACK
                     if (_isCameraOpened)
                     {
-     
+                        //Không cần làm gì cả vì khi có ảnh mới được chụp, hàm _Camera_VisionImageAvailable sẽ tự động được chạy.
                     }
                     else
                     {
-                        if (_isPlaybackOpened)
+                        //Nếu không có cam kết nối
+                        if (_isPlaybackOpened) 
                         {
                             foreach (ImageItem item in imageManager.GetImageItemList())
                             {
@@ -377,7 +388,8 @@ namespace VisionProApplication
 
         private void _VisionControl_VisionControlUserResultAvailable(object sender, VisionControl.VisionControlUserResultAvailableEventArgs e)
         {
-            if (_isRunning) 
+            //Khi ToolBlock chạy xong, hàm này sẽ được chạy
+            if (_isRunning) //Nếu đang ở chế độ RUN
             {
                 var result = e.Result;
                 try
@@ -385,8 +397,9 @@ namespace VisionProApplication
                     var jobPass = e.JobStatus.Result;
                     if (result != null)
                     {
+                        //Hiển thị ảnh kết quả record
                         _CogResultDisplay.Record = e.LastRunRecord.SubRecords[0];
-
+                        //Xử lý bộ đếm OK, NG
                         if (jobPass == CogToolResultConstants.Accept)
                         {
                             _okCount++;
@@ -396,7 +409,6 @@ namespace VisionProApplication
                             _ngCount++;
                         }
                         _totalCount = _okCount + _ngCount;
-
                         // Cập nhật UI trên UI thread
                         Dispatcher.Invoke(() =>
                         {
@@ -415,6 +427,7 @@ namespace VisionProApplication
 
         private void TabItem1_GotFocus(object sender, RoutedEventArgs e)
         {
+            //Khi chọn vào tab 1 thì cập nhật lại ảnh hiển thị playback nếu đã ấn RunOncePlayBack ở tab 2
             if (imageManager.GetCount() > 0)
             {
                 if (imageManager.GetCurrentFileName() != txtImageName.Text)
@@ -433,7 +446,6 @@ namespace VisionProApplication
             txtNgCount.Text = "0";
             txtTotalCount.Text = "0";
         }
-
 
     }
 }
