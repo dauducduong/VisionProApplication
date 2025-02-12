@@ -1,0 +1,96 @@
+﻿<Window x:Class="VisionProApplication.PlcWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:VisionProApplication"
+        mc:Ignorable="d"
+        Background="LightGray" Icon="/Icon/PlcWindowIcon.png" WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
+        Title="Connect to PLC" Height="400" Width="400">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Border Grid.Column="0">
+                <TextBlock VerticalAlignment="Center" FontSize="18">PLC Brand</TextBlock>
+            </Border>
+            <Border Grid.Column="1" Padding="0 5 0 5">
+                <ComboBox x:Name="cbbPlcBrand" DisplayMemberPath="Name" VerticalAlignment="Center" FontSize="18" Height="40" Width="200" VerticalContentAlignment="Center">
+                </ComboBox>
+            </Border>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Border Grid.Column="0">
+                <TextBlock VerticalAlignment="Center" FontSize="18">CPU Type</TextBlock>
+            </Border>
+            <Border Grid.Column="1" Padding="0 5 0 5">
+                <ComboBox x:Name="cbbPlcType" VerticalAlignment="Center" FontSize="18" Height="40" Width="200" VerticalContentAlignment="Center">
+                </ComboBox>
+            </Border>
+        </Grid>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Border>
+                <TextBlock FontSize="18" VerticalAlignment="Center">IP Address</TextBlock>
+            </Border>
+            <Border Grid.Column="1">
+                <TextBox x:Name="txtIpAddress" Width="200" FontSize="20" Margin="0,5,0,5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"></TextBox>
+            </Border>
+        </Grid>
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Border>
+                <TextBlock FontSize="18" VerticalAlignment="Center">Rack</TextBlock>
+            </Border>
+            <Border Grid.Column="1">
+                <TextBox x:Name="txtRack" Text="0" Width="200" FontSize="20" Margin="0,5,0,5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"></TextBox>
+            </Border>
+        </Grid>
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Border>
+                <TextBlock FontSize="18" VerticalAlignment="Center">Slot</TextBlock>
+            </Border>
+            <Border Grid.Column="1">
+                <TextBox x:Name="txtSlot" Text="1" Width="200" FontSize="20" Margin="0,5,0,5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"></TextBox>
+            </Border>
+        </Grid>
+        <Grid Grid.Row="6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="1">
+                <Button x:Name="btnConnect" Content="Connect" FontSize="15" Margin="0,8,5,8" Click="btnConnect_Click"/>
+            </Grid>
+            <Grid Grid.Column="2">
+                <Button x:Name="btnCancel" Content="Exit" FontSize="15" Margin="5,8,5,8" Click="btnExit_Click"></Button>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

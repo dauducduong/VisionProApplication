@@ -14,6 +14,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using VisionProApplication.Tools;
 using Cognex.VisionPro.Display;
+using S7.Net;
 #endregion
 
 namespace VisionProApplication
@@ -39,10 +40,11 @@ namespace VisionProApplication
         private int _totalCount;
         private bool _isCameraOpened;
         private bool _isPlaybackOpened;
-        bool _isRunning;
-        bool _isJobLoaded;
-        int _savingOption;
-        string _savingDir;
+        private bool _isRunning;
+        private bool _isJobLoaded;
+        private int _savingOption;
+        private string _savingDir;
+        private PlcSiemensComm _plc;
         #endregion
         public MainWindow()
         {
@@ -53,6 +55,7 @@ namespace VisionProApplication
             _CogDisplay = new CogRecordDisplay();
             _CogResultDisplay = new CogRecordDisplay();
             _CogToolBlockDisplay = new CogToolBlockEditV2();
+            _plc = new PlcSiemensComm();
             WPFCogDisplay.Child = _CogDisplay;
             WPFCogTool.Child = _CogToolBlockDisplay;
             WPFResultDisplay.Child = _CogResultDisplay;
@@ -253,6 +256,7 @@ namespace VisionProApplication
         #endregion
 
         #region Button method
+
         private void btnConnect_Click(object sender, RoutedEventArgs e)
         {
             if (btnConnect.Content is string buttonText && buttonText == "🔗 CONNECT") //Ấn CONNECT
@@ -537,6 +541,31 @@ namespace VisionProApplication
             settingWindow.SavingOptionChanged += OnSettingChanged; //Khi nào ấn Apply ở cửa sổ Setting thì hàm OnSettingChanged được kích hoạt
             settingWindow.ShowDialog();
         }
+
+        private void btnPlcConnect_Click(object sender, RoutedEventArgs e)
+        {
+            if (btnPlcConnect.Content.ToString() == "🔗 CONNECT")
+            {
+                PlcWindow plcWindow = new PlcWindow(_plc);
+                plcWindow.ShowDialog();
+                if (plcWindow.IsConnected)
+                {
+                    btnPlcConnect.Content = "⛓️‍💥 DISCONNECT";
+                }
+            }
+            else
+            {
+                _plc.Disconnect();
+                if (!_plc.Connected)
+                {
+                    btnPlcConnect.Content = "🔗 CONNECT";
+                }
+            }
+            
+        }
+
         #endregion
+
+
     }
 }

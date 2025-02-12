@@ -38,6 +38,9 @@
                             </Grid>
                             <TextBlock x:Name="txtImageCount" Text="File Name" TextAlignment="Center" FontSize="20" Margin="2 2 2 2"></TextBlock>
                             <TextBox x:Name="txtImageName" FontSize="15" Margin="2 2 2 2" MinHeight="40" TextAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" IsReadOnly="True"></TextBox>
+                            <Separator Margin="10"/>
+                            <TextBlock FontSize="20" HorizontalAlignment="Center" Margin="2 2 2 2">PLC</TextBlock>
+                            <Button x:Name="btnPlcConnect" Content="🔗 CONNECT" FontSize="15" MinHeight="40" Margin="2 2 2 2" Click="btnPlcConnect_Click"></Button>
                         </StackPanel>
                     </Grid>
                     <Grid Grid.Column="1" Background="CadetBlue">
@@ -60,7 +63,7 @@
                         </StackPanel>
                     </Grid>
                     <Grid Grid.Column="1" Background="CadetBlue">
-                        <WindowsFormsHost x:Name="WPFCogTool"></WindowsFormsHost>
+                        <WindowsFormsHost x:Name="WPFCogTool" FontSize="12"></WindowsFormsHost>
                     </Grid>
                 </Grid>
             </TabItem>
