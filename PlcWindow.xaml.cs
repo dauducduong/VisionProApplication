@@ -27,6 +27,7 @@ namespace VisionProApplication
         private PlcList _plcList;
         private PlcSiemensComm _plc;
         public bool IsConnected { get; private set; }
+        public string PlcModel { get; private set; }
 
 
         public PlcWindow(PlcSiemensComm plc)
@@ -64,6 +65,7 @@ namespace VisionProApplication
             _plc.Connect(cpuType, ipAddress, rack, slot);
             if (_plc.Connected)
             {
+                PlcModel = cpuType;
                 IsConnected = true;
                 MessageBox.Show("Sucessfully connected to PLC", "Connect notification", MessageBoxButton.OK, MessageBoxImage.Information);
                 this.Close();

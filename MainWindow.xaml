@@ -6,7 +6,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:VisionProApplication"
         mc:Ignorable="d"
-        Title="Basic VisionPro Application" Height="720" Width="1280" Closing="Window_Closing" WindowStartupLocation="CenterScreen">
+        Title="Basic VisionPro Application" Height="800" Width="1280" Closing="Window_Closing" WindowStartupLocation="CenterScreen" Icon="/Icon/MainWindowIcon.png">
     <Grid>
         <TabControl x:Name="tabControl" Grid.ColumnSpan="2" SelectionChanged="tabControl_SelectionChanged">
             <TabItem Header="1. Connect" FontSize="20" MinHeight="35" MinWidth="120" GotFocus="TabItem1_GotFocus">
@@ -21,7 +21,7 @@
                             <Button x:Name="btnConnect" Content="🔗 CONNECT" FontSize="15"  MinHeight="40" Margin="2 2 2 2" Click="btnConnect_Click"></Button>
                             <Button x:Name="btnTrigger" Content="⚡TRIGGER" FontSize="15" MinHeight="40" Margin="2 2 2 2" Click="btnTrigger_Click"></Button>
                             <Button x:Name="btnLive" Content="🎥 LIVE" FontSize="15" MinHeight="40" Margin="2 2 2 2" Click="btnLive_Click"></Button>
-                            <TextBlock FontSize="20" HorizontalAlignment="Center" Margin="2 2 2 2">Camera Model</TextBlock>
+                            <TextBlock FontSize="20" HorizontalAlignment="Center" Margin="2 2 2 2">Model</TextBlock>
                             <TextBox x:Name="txtCamModel" MinHeight="35" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15" Margin="2 2 2 2" Foreground="Green" IsReadOnly="True" TextWrapping="Wrap"></TextBox>
                             <TextBlock FontSize="20" HorizontalAlignment="Center" Margin="2 2 2 2">Exposure</TextBlock>
                             <xctk:IntegerUpDown x:Name="txtExposureNum" MinHeight="35" FontSize="20" Margin="2 2 2 2" Minimum="5" Maximum="500" Value="50" Increment="5" ValueChanged="TxtExposureNum_ValueChanged"/>
@@ -41,6 +41,8 @@
                             <Separator Margin="10"/>
                             <TextBlock FontSize="20" HorizontalAlignment="Center" Margin="2 2 2 2">PLC</TextBlock>
                             <Button x:Name="btnPlcConnect" Content="🔗 CONNECT" FontSize="15" MinHeight="40" Margin="2 2 2 2" Click="btnPlcConnect_Click"></Button>
+                            <TextBlock Text="Model" TextAlignment="Center" FontSize="20" Margin="2 2 2 2"></TextBlock>
+                            <TextBox x:Name="txtPlcModel" Foreground="Green" FontSize="15" Margin="2 2 2 2" MinHeight="40" TextAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" IsReadOnly="True"></TextBox>
                         </StackPanel>
                     </Grid>
                     <Grid Grid.Column="1" Background="CadetBlue">

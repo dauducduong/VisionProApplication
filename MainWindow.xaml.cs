@@ -223,6 +223,10 @@ namespace VisionProApplication
             {
                 _Camera.DestroyCamera(0);
             }
+            if (_plc.Connected)
+            {
+                _plc.Disconnect();
+            }
             System.Windows.Application.Current.Shutdown();
             
         }
@@ -546,10 +550,12 @@ namespace VisionProApplication
         {
             if (btnPlcConnect.Content.ToString() == "🔗 CONNECT")
             {
+
                 PlcWindow plcWindow = new PlcWindow(_plc);
                 plcWindow.ShowDialog();
                 if (plcWindow.IsConnected)
                 {
+                    txtPlcModel.Text = plcWindow.PlcModel.ToString();
                     btnPlcConnect.Content = "⛓️‍💥 DISCONNECT";
                 }
             }
@@ -558,6 +564,7 @@ namespace VisionProApplication
                 _plc.Disconnect();
                 if (!_plc.Connected)
                 {
+                    txtPlcModel.Clear();
                     btnPlcConnect.Content = "🔗 CONNECT";
                 }
             }

@@ -266,5 +266,8 @@
   <ItemGroup>
     <Resource Include="Icon\PlcWindowIcon.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icon\MainWindowIcon.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
