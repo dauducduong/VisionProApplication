@@ -23,7 +23,7 @@ namespace VisionProApplication
             _savingDir = "";
             btnChooseDir.IsEnabled = false;
             solutionPath = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetCurrentDirectory())?.FullName)?.FullName)?.FullName;
-            txtCurrentDir.Text = "Current saving directory: " + solutionPath;
+            txtCurrentDir.Text = "Current saving directory: " + Path.Combine(solutionPath, "Run");
         }
 
         public event Action<SettingData> SavingOptionChanged;

@@ -216,7 +216,7 @@ namespace VisionProApplication
             numAcqs.Clear();
             ISLIVE.Clear();
             listCam.Clear();
-
+            
         }
 
         public void SetupOutput()

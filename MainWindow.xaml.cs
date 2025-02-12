@@ -1,33 +1,20 @@
-﻿using System;
+﻿#region Namespace declaration
+using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using System.Windows.Forms.Integration;
 using System.Windows;
-using System.Windows.Interop;
 using Cognex.VisionPro;
-using Cognex.VisionPro.ImageFile;
-using Cognex.VisionPro.QuickBuild.Implementation.Internal;
 using Cognex.VisionPro.ToolBlock;
-using NPOI.OpenXmlFormats.Vml;
-using NPOI.SS.Formula.Functions;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using VisionProApplication.Tools;
 using Cognex.VisionPro.Display;
-
+#endregion
 
 namespace VisionProApplication
 {
@@ -36,21 +23,7 @@ namespace VisionProApplication
     /// </summary>
     public partial class MainWindow : Window
     {
-        #region Win32 API Functions
-        [DllImport("user32.dll", SetLastError = true)]
-        public static extern IntPtr GetDC(IntPtr hWnd);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        public static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
-
-        [DllImport("gdi32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool BitBlt(IntPtr hdcDest, int xDest, int yDest, int wDest, int hDest,
-                                         IntPtr hdcSrc, int xSrc, int ySrc, int rop);
-
-        const int SRCCOPY = 0x00CC0020;
-        #endregion
-
+        #region Variable declaration
         private CogRecordDisplay _CogDisplay { get; set; }
         private CogRecordDisplay _CogResultDisplay { get; set; }
         private readonly Camera _Camera;
@@ -70,16 +43,16 @@ namespace VisionProApplication
         bool _isJobLoaded;
         int _savingOption;
         string _savingDir;
-
-
+        #endregion
         public MainWindow()
         {
+            InitializeComponent();
+            #region Variable assignment
             _Camera = new Camera();
-            _Camera.VisionImageAvailable += _Camera_VisionImageAvailable;
+            _Camera.VisionImageAvailable += Camera_VisionImageAvailable;
             _CogDisplay = new CogRecordDisplay();
             _CogResultDisplay = new CogRecordDisplay();
             _CogToolBlockDisplay = new CogToolBlockEditV2();
-            InitializeComponent();
             WPFCogDisplay.Child = _CogDisplay;
             WPFCogTool.Child = _CogToolBlockDisplay;
             WPFResultDisplay.Child = _CogResultDisplay;
@@ -102,8 +75,11 @@ namespace VisionProApplication
             btnStop.IsEnabled = false;
             btnStart.IsEnabled = false;
             btnSetting.IsEnabled = false;
+            #endregion
         }
-        private void _Camera_VisionImageAvailable(object sender, Camera.VinsionImageAvailableEventArgs e)
+
+        #region Camera method
+        private void Camera_VisionImageAvailable(object sender, Camera.VinsionImageAvailableEventArgs e)
         {
             //Khi camera trigger và chụp được 1 ảnh mới e.Image
             if (!_isRunning)  //Nếu không ở chế độ 3. Run
@@ -127,6 +103,156 @@ namespace VisionProApplication
 
         }
 
+        private void VisionControl_VisionControlUserResultAvailable(object sender, VisionControl.VisionControlUserResultAvailableEventArgs e)
+        {
+            //Khi ToolBlock chạy xong, hàm này sẽ được chạy
+            if (_isRunning) //Nếu đang ở chế độ RUN
+            {
+                var result = e.Result;
+                try
+                {
+                    var jobPass = e.JobStatus.Result;
+                    if (result != null)
+                    {
+                        //Hiển thị ảnh kết quả record
+                        _CogResultDisplay.Record = e.LastRunRecord.SubRecords[0];
+                        //Xử lý bộ đếm OK, NG
+                        if (jobPass == CogToolResultConstants.Accept)
+                        {
+                            _okCount++;
+                        }
+                        else
+                        {
+                            _ngCount++;
+                        }
+                        _totalCount = _okCount + _ngCount;
+                        //Save file
+                        if (_savingOption != 0)
+                        {
+                            switch (_savingOption)
+                            {
+                                case 1:
+                                    SaveResultImage();
+                                    break;
+                                case 2 when jobPass == CogToolResultConstants.Accept:
+                                case 3 when jobPass == CogToolResultConstants.Reject:
+                                    SaveResultImage();
+                                    break;
+                            }
+                        }
+                        // Cập nhật UI trên UI thread
+                        Dispatcher.Invoke(() =>
+                        {
+                            txtOkCount.Text = _okCount.ToString() + "(" + Math.Round(((_okCount / (double)_totalCount) * 100), 2).ToString() + "%)";
+                            txtNgCount.Text = _ngCount.ToString() + "(" + (100 - Math.Round(((_okCount / (double)_totalCount) * 100), 2)).ToString() + "%)";
+                            txtTotalCount.Text = _totalCount.ToString();
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show(ex.ToString());
+                }
+            }
+        }
+
+        private void TxtExposureNum_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (_Camera != null)
+            {
+                _Camera.SetExposure(0, Convert.ToInt32(txtExposureNum.Value));
+            }
+        }
+
+        private void ShowImage()
+        {
+            //Hiển thị ảnh, tên file, thứ tự trong list (Chỉ dùng cho PLAYBACK)
+            _CogDisplay.Image = imageManager.ConvertBitmapToCogImage(imageManager.GetCurrentImage());
+            txtImageName.Text = imageManager.GetCurrentFileName();
+            txtImageCount.Text = "File Name" + " (" + (imageManager.GetCurrentIndex() + 1).ToString() + "/" + imageManager.GetCount().ToString() + ")";
+            //Nếu đang là ảnh cuối của list thì disable nút next ảnh, còn ảnh đầu thì disable nút back ảnh
+            if (imageManager.GetCurrentIndex() == imageManager.GetCount() - 1)
+            {
+                btnNextImg.IsEnabled = false;
+            }
+            else
+            {
+                btnNextImg.IsEnabled = true;
+            }
+            if (imageManager.GetCurrentIndex() == 0)
+            {
+                btnPrevImg.IsEnabled = false;
+            }
+            else
+            {
+                btnPrevImg.IsEnabled = true;
+            }
+        }
+
+        private void SaveResultImage()
+        {
+            if (!Directory.Exists(_savingDir))
+            {
+                Directory.CreateDirectory(_savingDir);
+            }
+
+            if (_CogResultDisplay == null) throw new ArgumentNullException(nameof(_CogResultDisplay));
+            try
+            {
+                // Chụp ảnh từ Display (bao gồm cả đồ họa vẽ)
+                Bitmap bitmap = (Bitmap)_CogResultDisplay.CreateContentBitmap(CogDisplayContentBitmapConstants.Image);
+                // Lưu ảnh chụp lại
+                int count = Directory.GetFiles(_savingDir, "image*.bmp").Length + 1;
+                string filePath = System.IO.Path.Combine(_savingDir, $"image{count}.bmp");
+                bitmap.Save(filePath, ImageFormat.Bmp);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.ToString());
+            }
+        }
+        #endregion
+
+        #region Window method
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (_Camera.camCount > 0)
+            {
+                _Camera.DestroyCamera(0);
+            }
+            System.Windows.Application.Current.Shutdown();
+            
+        }
+
+        private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            System.Windows.Controls.TabControl tabControl = sender as System.Windows.Controls.TabControl;
+            if (tabControl != null)
+            {
+                _selectedIndex = tabControl.SelectedIndex;
+            }
+        }
+
+        private void TabItem1_GotFocus(object sender, RoutedEventArgs e)
+        {
+            //Khi chọn vào tab 1 thì cập nhật lại ảnh hiển thị playback nếu đã ấn RunOncePlayBack ở tab 2
+            if (imageManager.GetCount() > 0)
+            {
+                if (imageManager.GetCurrentFileName() != txtImageName.Text)
+                {
+                    ShowImage();
+                }
+            }
+        }
+
+        private void OnSettingChanged(SettingData data)
+        {
+            _savingOption = data.SavingOption;
+            _savingDir = data.SavingDir;
+        }
+        #endregion
+
+        #region Button method
         private void btnConnect_Click(object sender, RoutedEventArgs e)
         {
             if (btnConnect.Content is string buttonText && buttonText == "🔗 CONNECT") //Ấn CONNECT
@@ -205,11 +331,6 @@ namespace VisionProApplication
             }
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            _Camera.DestroyCamera(0);
-        }
-
         private void btnTrigger_Click(object sender, RoutedEventArgs e)
         {
             _Camera.RunOnce(0);
@@ -232,7 +353,7 @@ namespace VisionProApplication
                     List<CogToolBlock> _mtoolblockManager = new List<CogToolBlock>();
                     _mtoolblockManager.Add(Job);
                     _VisionControl = new VisionControl(ref _mtoolblockManager);
-                    _VisionControl.VisionControlUserResultAvailable += _VisionControl_VisionControlUserResultAvailable;
+                    _VisionControl.VisionControlUserResultAvailable += VisionControl_VisionControlUserResultAvailable;
                     _VisionControl.AttachToJobManager(true);
                     _CogToolBlockDisplay.Subject = Job;
                     _isJobLoaded = true;
@@ -253,11 +374,6 @@ namespace VisionProApplication
                     System.Windows.MessageBox.Show(ex.ToString());
                 } 
             }
-        }
-
-        private void TxtExposureNum_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            _Camera.SetExposure(0, Convert.ToInt32(txtExposureNum.Value));
         }
 
         private void btnRunOnce_Click(object sender, RoutedEventArgs e)
@@ -281,15 +397,6 @@ namespace VisionProApplication
             }
             //Chạy toolblock
             _VisionControl.StartRunningOnce(imageManager.GetCurrentImage(), 0);
-        }
-
-        private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            System.Windows.Controls.TabControl tabControl = sender as System.Windows.Controls.TabControl;
-            if (tabControl != null)
-            {
-                _selectedIndex = tabControl.SelectedIndex;
-            }
         }
 
         private void btnSaveJob_Click(object sender, RoutedEventArgs e)
@@ -333,54 +440,6 @@ namespace VisionProApplication
                     }
                     
                 }
-            }
-        }
-
-        private void ShowImage()
-        {
-            //Hiển thị ảnh, tên file, thứ tự trong list (Chỉ dùng cho PLAYBACK)
-            _CogDisplay.Image = imageManager.ConvertBitmapToCogImage(imageManager.GetCurrentImage());
-            txtImageName.Text = imageManager.GetCurrentFileName();
-            txtImageCount.Text = "File Name" + " (" + (imageManager.GetCurrentIndex() + 1).ToString() + "/" + imageManager.GetCount().ToString() + ")";
-            //Nếu đang là ảnh cuối của list thì disable nút next ảnh, còn ảnh đầu thì disable nút back ảnh
-            if (imageManager.GetCurrentIndex() == imageManager.GetCount() - 1)
-            {
-                btnNextImg.IsEnabled = false;
-            }
-            else
-            {
-                btnNextImg.IsEnabled = true;
-            }
-            if (imageManager.GetCurrentIndex() == 0)
-            {
-                btnPrevImg.IsEnabled = false;
-            }
-            else
-            {
-                btnPrevImg.IsEnabled = true;
-            }
-        }
-        
-        private void SaveResultImage()
-        {
-            if (!Directory.Exists(_savingDir)) 
-            {
-                Directory.CreateDirectory(_savingDir);
-            }
-
-            if (_CogResultDisplay == null) throw new ArgumentNullException(nameof(_CogResultDisplay));
-            try
-            {
-                // Chụp ảnh từ Display (bao gồm cả đồ họa vẽ)
-                Bitmap bitmap = (Bitmap)_CogResultDisplay.CreateContentBitmap(CogDisplayContentBitmapConstants.Image);
-                // Lưu ảnh chụp lại
-                int count = Directory.GetFiles(_savingDir, "image*.bmp").Length + 1;
-                string filePath = System.IO.Path.Combine(_savingDir, $"image{count}.bmp");
-                bitmap.Save(filePath, ImageFormat.Bmp);
-            }
-            catch (Exception ex)
-            {
-                System.Windows.MessageBox.Show(ex.ToString());
             }
         }
 
@@ -437,71 +496,6 @@ namespace VisionProApplication
             });
         }
 
-        private void _VisionControl_VisionControlUserResultAvailable(object sender, VisionControl.VisionControlUserResultAvailableEventArgs e)
-        {
-            //Khi ToolBlock chạy xong, hàm này sẽ được chạy
-            if (_isRunning) //Nếu đang ở chế độ RUN
-            {
-                var result = e.Result;
-                try
-                {
-                    var jobPass = e.JobStatus.Result;
-                    if (result != null)
-                    {
-                        //Hiển thị ảnh kết quả record
-                        _CogResultDisplay.Record = e.LastRunRecord.SubRecords[0];
-                        //Xử lý bộ đếm OK, NG
-                        if (jobPass == CogToolResultConstants.Accept)
-                        {
-                            _okCount++;
-                        }
-                        else
-                        {
-                            _ngCount++;
-                        }
-                        _totalCount = _okCount + _ngCount;
-                        //Save file
-                        if (_savingOption != 0)
-                        {
-                            switch (_savingOption)
-                            {
-                                case 1:
-                                    SaveResultImage();
-                                    break;
-                                case 2 when jobPass == CogToolResultConstants.Accept:
-                                case 3 when jobPass == CogToolResultConstants.Reject:
-                                    SaveResultImage();
-                                    break;
-                            }
-                        }
-                        // Cập nhật UI trên UI thread
-                        Dispatcher.Invoke(() =>
-                        {
-                            txtOkCount.Text = _okCount.ToString() + "(" + Math.Round(((_okCount / (double)_totalCount) * 100), 2).ToString() + "%)";
-                            txtNgCount.Text = _ngCount.ToString() + "(" + (100 - Math.Round(((_okCount / (double)_totalCount) * 100), 2)).ToString() + "%)";
-                            txtTotalCount.Text = _totalCount.ToString();
-                        });
-                    }
-                }
-                catch (Exception ex)
-                {
-                    System.Windows.MessageBox.Show(ex.ToString());
-                }
-            }
-        }
-
-        private void TabItem1_GotFocus(object sender, RoutedEventArgs e)
-        {
-            //Khi chọn vào tab 1 thì cập nhật lại ảnh hiển thị playback nếu đã ấn RunOncePlayBack ở tab 2
-            if (imageManager.GetCount() > 0)
-            {
-                if (imageManager.GetCurrentFileName() != txtImageName.Text)
-                {
-                    ShowImage();
-                }
-            }
-        }
-
         private void btnReset_Click(object sender, RoutedEventArgs e)
         {
             _okCount = 0;
@@ -543,11 +537,6 @@ namespace VisionProApplication
             settingWindow.SavingOptionChanged += OnSettingChanged; //Khi nào ấn Apply ở cửa sổ Setting thì hàm OnSettingChanged được kích hoạt
             settingWindow.ShowDialog();
         }
-
-        private void OnSettingChanged(SettingData data)
-        {
-            _savingOption = data.SavingOption;
-            _savingDir = data.SavingDir;
-        }
+        #endregion
     }
 }
