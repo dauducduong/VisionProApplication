@@ -11,11 +11,13 @@ namespace VisionProApplication.Tools
     public class PlcSiemensComm
     {
         private Plc plc;
-        public bool Connected { get; private set; }
+        public bool IsConnected { get; private set; }
 
         // Kết nối PLC
-        public void Connect(string cputype, string ipAddress, short rack, short slot)
+        public void Connect(string ipAddress, short rack, short slot)
         {
+            /* 
+             Nếu truyền thêm cpuType
             string formattedCpuType = cputype.Replace("-", "");
             // Chuyển string thành enum
             if (!Enum.TryParse(formattedCpuType, out CpuType cpuModel))
@@ -23,16 +25,17 @@ namespace VisionProApplication.Tools
                 MessageBox.Show("Invalid CPU type!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+            */
             try
             {
-                plc = new Plc(cpuModel, ipAddress, rack, slot);
+                plc = new Plc(CpuType.S71200, ipAddress, rack, slot);
                 plc.Open();
-                Connected = plc.IsConnected;
+                IsConnected = plc.IsConnected;
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "PLC Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                Connected = false;
+                IsConnected = false;
             }
         }
 
@@ -42,7 +45,7 @@ namespace VisionProApplication.Tools
             if (plc != null && plc.IsConnected)
             {
                 plc.Close();
-                Connected = false;
+                IsConnected = false;
             }
         }
 
@@ -51,7 +54,7 @@ namespace VisionProApplication.Tools
         {
             try
             {
-                if (Connected)
+                if (IsConnected)
                 {
                     var result = plc.Read(address).ToString();
                     if (result != null)
@@ -80,7 +83,7 @@ namespace VisionProApplication.Tools
         {
             try
             {
-                if (Connected)
+                if (IsConnected)
                 {
                     plc.Write(address, value);
                 }

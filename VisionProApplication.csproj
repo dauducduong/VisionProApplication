@@ -68,6 +68,9 @@
     <Reference Include="Cognex.VisionPro.QuickBuild.Core, Version=73.0.0.0, Culture=neutral, PublicKeyToken=ef0f902af9dee505, processorArchitecture=AMD64" />
     <Reference Include="Cognex.VisionPro.ToolGroup, Version=73.0.0.0, Culture=neutral, PublicKeyToken=ef0f902af9dee505, processorArchitecture=AMD64" />
     <Reference Include="Cognex.VisionPro.ToolGroup.Controls, Version=73.0.0.0, Culture=neutral, PublicKeyToken=ef0f902af9dee505, processorArchitecture=AMD64" />
+    <Reference Include="Communication">
+      <HintPath>F:\VNTECHCO\Training\VNT\WPF\AFM CHECK PIN v1.0\VisionPro\bin\Debug\Communication.dll</HintPath>
+    </Reference>
     <Reference Include="Enums.NET, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7ea1c1650d506225, processorArchitecture=MSIL">
       <HintPath>packages\Enums.NET.4.0.1\lib\net45\Enums.NET.dll</HintPath>
     </Reference>
@@ -187,6 +190,7 @@
     </Compile>
     <Compile Include="Tools\ImageManager.cs" />
     <Compile Include="Tools\Camera.cs" />
+    <Compile Include="Tools\PlcMitsubishiComm.cs" />
     <Compile Include="Tools\PlcManager.cs" />
     <Compile Include="Tools\PlcSiemensComm.cs" />
     <Compile Include="Tools\SettingData.cs" />

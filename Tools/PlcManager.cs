@@ -48,6 +48,17 @@ namespace VisionProApplication
             }
         }
     }
+    public interface IPlcComm
+    {
+        string PlcName { get; }
+        bool IsConnected { get; }
+        void Connect(string ipAddress, int port);
+        void Connect(string ipAddress, short rack, short slot);
+        void Disconnect();
+        string ReadData(ushort address);
+        string ReadData(string address);
+        void WriteData(string address, string value);
+    }
 }
 
 

@@ -26,7 +26,7 @@
                 <TextBlock VerticalAlignment="Center" FontSize="18">PLC Brand</TextBlock>
             </Border>
             <Border Grid.Column="1" Padding="0 5 0 5">
-                <ComboBox x:Name="cbbPlcBrand" DisplayMemberPath="Name" VerticalAlignment="Center" FontSize="18" Height="40" Width="200" VerticalContentAlignment="Center">
+                <ComboBox x:Name="cbbPlcBrand" DisplayMemberPath="Name" VerticalAlignment="Center" FontSize="18" Height="40" Width="200" VerticalContentAlignment="Center" SelectionChanged="cbbPlcBrand_SelectionChanged">
                 </ComboBox>
             </Border>
         </Grid>
@@ -61,7 +61,7 @@
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Border>
-                <TextBlock FontSize="18" VerticalAlignment="Center">Rack</TextBlock>
+                <TextBlock x:Name="txtRacklabel" FontSize="18" VerticalAlignment="Center">Rack</TextBlock>
             </Border>
             <Border Grid.Column="1">
                 <TextBox x:Name="txtRack" Text="0" Width="200" FontSize="20" Margin="0,5,0,5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"></TextBox>
@@ -73,7 +73,7 @@
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Border>
-                <TextBlock FontSize="18" VerticalAlignment="Center">Slot</TextBlock>
+                <TextBlock x:Name="txtSlotlabel" FontSize="18" VerticalAlignment="Center">Slot</TextBlock>
             </Border>
             <Border Grid.Column="1">
                 <TextBox x:Name="txtSlot" Text="1" Width="200" FontSize="20" Margin="0,5,0,5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"></TextBox>

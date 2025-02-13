@@ -57,15 +57,14 @@ namespace VisionProApplication
 
         private void btnConnect_Click(object sender, RoutedEventArgs e)
         {
-            string cpuType = cbbPlcType.SelectedItem as string;
             string ipAddress = txtIpAddress.Text;
             short rack = Convert.ToInt16(txtRack.Text);
             short slot = Convert.ToInt16(txtSlot.Text);
-            
-            _plc.Connect(cpuType, ipAddress, rack, slot);
-            if (_plc.Connected)
+
+            _plc.Connect(ipAddress, rack, slot);
+            if (_plc.IsConnected)
             {
-                PlcModel = cpuType;
+                PlcModel = cbbPlcType.SelectedItem as string;
                 IsConnected = true;
                 MessageBox.Show("Sucessfully connected to PLC", "Connect notification", MessageBoxButton.OK, MessageBoxImage.Information);
                 this.Close();

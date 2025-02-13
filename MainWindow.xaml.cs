@@ -242,7 +242,7 @@ namespace VisionProApplication
             {
                 _Camera.DestroyCamera(0);
             }
-            if (_plc.Connected)
+            if (_plc.IsConnected)
             {
                 _plc.Disconnect();
             }
@@ -306,6 +306,10 @@ namespace VisionProApplication
                         btnRunOnce.IsEnabled = true;
                         btnStart.IsEnabled = true;
                     }
+                }
+                else
+                {
+                    System.Windows.MessageBox.Show("No camera connected! Try again!", "Camera Not Found", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
             else
@@ -602,7 +606,7 @@ namespace VisionProApplication
             else
             {
                 _plc.Disconnect();
-                if (!_plc.Connected)
+                if (!_plc.IsConnected)
                 {
                     txtPlcModel.Clear();
                     btnPlcConnect.Content = "🔗 CONNECT";
