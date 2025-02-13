@@ -45,6 +45,7 @@ namespace VisionProApplication
         private int _savingOption;
         private string _savingDir;
         private PlcSiemensComm _plc;
+        private int selectedJob;
         #endregion
         public MainWindow()
         {
@@ -78,6 +79,7 @@ namespace VisionProApplication
             btnStop.IsEnabled = false;
             btnStart.IsEnabled = false;
             btnSetting.IsEnabled = false;
+            selectedJob = 0;
             #endregion
         }
 
@@ -95,13 +97,19 @@ namespace VisionProApplication
                 {
                     if (_selectedIndex == 1) //Thử chạy tool block với 1 ảnh trigger từ cam ở 2. Program
                     {
-                        _VisionControl.StartRunningOnce(e.Image.ToBitmap(), 0);
+                        for (int i = 0; i < _CogToolBlockDisplay.Subject.Tools.Count; i++)
+                        {
+                            if (_CogToolBlockDisplay.Subject.Tools[i] is CogToolBlock)
+                            {
+                                _VisionControl.StartRunningOnce(e.Image.ToBitmap(), i);
+                            }
+                        }
                     }
                 }
             }
             else //Ở chế độ Run
             {
-                _VisionControl.StartRunningOnce(e.Image.ToBitmap(), 0);
+                _VisionControl.StartRunningOnce(e.Image.ToBitmap(), selectedJob);
             }
 
         }
@@ -123,10 +131,21 @@ namespace VisionProApplication
                         if (jobPass == CogToolResultConstants.Accept)
                         {
                             _okCount++;
+                            Dispatcher.Invoke(() =>
+                            {
+                                txtRunResult.Content = "OK";
+                                txtRunResult.Foreground = new SolidColorBrush(Colors.LimeGreen);
+                            });
+
                         }
                         else
                         {
                             _ngCount++;
+                            Dispatcher.Invoke(() =>
+                            {
+                                txtRunResult.Content = "NG";
+                                txtRunResult.Foreground = new SolidColorBrush(Colors.Red);
+                            });
                         }
                         _totalCount = _okCount + _ngCount;
                         //Save file
@@ -252,6 +271,13 @@ namespace VisionProApplication
             }
         }
 
+        private void ccbRunJob_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBoxItem selectedItem = (ComboBoxItem)ccbRunJob.SelectedItem;
+            string selectedTag = selectedItem?.Tag?.ToString();
+            selectedJob = Convert.ToInt16(selectedTag);
+        }
+
         private void OnSettingChanged(SettingData data)
         {
             _savingOption = data.SavingOption;
@@ -359,12 +385,24 @@ namespace VisionProApplication
                 {
                     Job = (CogToolBlock)CogSerializer.LoadObjectFromFile(FileJob);
                     List<CogToolBlock> _mtoolblockManager = new List<CogToolBlock>();
-                    _mtoolblockManager.Add(Job);
+                    ccbRunJob.Items.Clear();
+                    for (int i = 0; i < Job.Tools.Count; i++)
+                    {
+                        //Thêm toolblock vào mtoolblockManager
+                        _mtoolblockManager.Add(Job.Tools[i] as CogToolBlock);
+                        //Cập nhật ccbRunJob
+                        ComboBoxItem item = new ComboBoxItem { Content = Job.Tools[i].Name, Tag = i.ToString() };
+                        ccbRunJob.Items.Add(item);
+                    }
+                    ccbRunJob.SelectedIndex = 0;
                     _VisionControl = new VisionControl(ref _mtoolblockManager);
                     _VisionControl.VisionControlUserResultAvailable += VisionControl_VisionControlUserResultAvailable;
                     _VisionControl.AttachToJobManager(true);
                     _CogToolBlockDisplay.Subject = Job;
                     _isJobLoaded = true;
+                    
+                    
+
                     if (_isCameraOpened) //Nếu đã kết nối cam
                     {
                         btnRunOnce.IsEnabled = true;
@@ -469,6 +507,7 @@ namespace VisionProApplication
             btnStart.IsEnabled = true;
             btnStop.IsEnabled = false;
             btnReset.IsEnabled = true;
+            ccbRunJob.IsEnabled = true;
         }
 
         private async void btnStart_Click(object sender, RoutedEventArgs e)
@@ -477,7 +516,8 @@ namespace VisionProApplication
             btnStop.IsEnabled = true;
             btnStart.IsEnabled = false;
             btnReset.IsEnabled = false;
-            //Chương trình
+            ccbRunJob.IsEnabled = false;
+            //Chương trình chạy
             await Task.Run(() =>
             {
                 while (_isRunning)
@@ -494,7 +534,7 @@ namespace VisionProApplication
                         {
                             foreach (ImageItem item in imageManager.GetImageItemList())
                             {
-                                _VisionControl.StartRunningOnce(item.Image, 0);
+                                _VisionControl.StartRunningOnce(item.Image, selectedJob);
                                 Task.Delay(200).Wait();
                             }
                         }
@@ -570,6 +610,7 @@ namespace VisionProApplication
             }
             
         }
+
 
         #endregion
 

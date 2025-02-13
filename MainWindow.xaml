@@ -77,11 +77,17 @@
                     </Grid.ColumnDefinitions>
                     <Grid Grid.Column="0" Background="Beige">
                         <StackPanel Margin="5">
+                            <TextBlock Text="Run Job" Margin="0 0 0 5"  HorizontalAlignment="Center"></TextBlock>
+                            <ComboBox x:Name="ccbRunJob" MinHeight="40" FontSize="15" Margin="2 2 2 2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" SelectionChanged="ccbRunJob_SelectionChanged"/>
                             <TextBlock Text="Control Panel" Margin="0 0 0 5"  HorizontalAlignment="Center"></TextBlock>
                             <Button x:Name="btnStart" Content="▶️ START" FontSize="15"  MinHeight="40" Margin="2 2 2 2" Click="btnStart_Click" Background="LimeGreen"></Button>
                             <Button x:Name="btnStop" Content="⏹️ STOP" FontSize="15" MinHeight="40" Margin="2 2 2 2" Click="btnStop_Click" Background="Red"/>
                             <Button x:Name="btnReset" Content="🔃 RESET" FontSize="15" MinHeight="40" Margin="2 2 2 2" Click="btnReset_Click"/>
-                            <TextBlock Text="Data Monitoring" Margin="0 5 0 5" TextAlignment="Justify" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="Run Result" Margin="0 5 0 5" TextAlignment="Justify" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Border Height="100"  Background="LightGray">
+                                <Label x:Name="txtRunResult" FontSize="60" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"></Label>
+                            </Border>
+                            <TextBlock Text="Data Counter" Margin="0 5 0 5" TextAlignment="Justify" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             <Grid Height="Auto" Background="LightGray">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="65"></ColumnDefinition>

@@ -42,6 +42,7 @@ namespace VisionProApplication
         public VisionControl(ref List<CogToolBlock> toolBlocks)
         {
             _cogToolBlockManager = toolBlocks;
+            
         }
         public void AttachToJobManager(bool attach)
         {
@@ -91,17 +92,27 @@ namespace VisionProApplication
         {
             if (inputBitmap != null)
             {
-                CogImage8Grey inputImage = new CogImage8Grey(inputBitmap);
-                try
+                if (index >= 0 && index < _cogToolBlockManager.Count)
                 {
-                    _cogToolBlockManager[index].Inputs["OutputImage"].Value = inputImage;
-                    _cogToolBlockManager[index].Run();
-
+                    CogImage8Grey inputImage = new CogImage8Grey(inputBitmap);
+                    try
+                    {
+                        _cogToolBlockManager[index].Inputs["OutputImage"].Value = inputImage;
+                        _cogToolBlockManager[index].Run();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show(ex.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Index out of bounds", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
+            }
+            else
+            {
+                MessageBox.Show("Input bitmap is null", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
