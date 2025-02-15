@@ -273,8 +273,5 @@
   <ItemGroup>
     <Resource Include="Icon\MainWindowIcon.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="External References\" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
