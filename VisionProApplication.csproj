@@ -273,5 +273,61 @@
   <ItemGroup>
     <Resource Include="Icon\MainWindowIcon.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="External References\BouncyCastle.Cryptography.dll" />
+    <Content Include="External References\Cognex.VisionPro.Comm.dll" />
+    <Content Include="External References\Cognex.VisionPro.Controls.dll" />
+    <Content Include="External References\Cognex.VisionPro.Core.dll" />
+    <Content Include="External References\Cognex.VisionPro.CorePlus.dll" />
+    <Content Include="External References\Cognex.VisionPro.Database.dll" />
+    <Content Include="External References\Cognex.VisionPro.Display.Controls.dll" />
+    <Content Include="External References\Cognex.VisionPro.dll" />
+    <Content Include="External References\Cognex.VisionPro.FG1394DCAM.dll" />
+    <Content Include="External References\Cognex.VisionPro.FGGigE.dll" />
+    <Content Include="External References\Cognex.VisionPro.ImageFile.dll" />
+    <Content Include="External References\Cognex.VisionPro.ImageProcessing.dll" />
+    <Content Include="External References\Cognex.VisionPro.Inspection.Controls.dll" />
+    <Content Include="External References\Cognex.VisionPro.Inspection.dll" />
+    <Content Include="External References\Cognex.VisionPro.Interop.Core.dll" />
+    <Content Include="External References\Cognex.VisionPro.QuickBuild.Controls.dll" />
+    <Content Include="External References\Cognex.VisionPro.QuickBuild.Core.dll" />
+    <Content Include="External References\Cognex.VisionPro.QuickBuild.IO.dll" />
+    <Content Include="External References\Cognex.VisionPro.ResultsAnalysis.dll" />
+    <Content Include="External References\Cognex.VisionPro.ToolGroup.Controls.dll" />
+    <Content Include="External References\Cognex.VisionPro.ToolGroup.dll" />
+    <Content Include="External References\Cognex.VisionPro3D.Core.dll" />
+    <Content Include="External References\Cognex.VisionPro3D.Display.Controls.dll" />
+    <Content Include="External References\Cognex.VisionPro3D.dll" />
+    <Content Include="External References\Cognex.VisionPro3D.Graphic.dll" />
+    <Content Include="External References\Communication.dll" />
+    <Content Include="External References\Enums.NET.dll" />
+    <Content Include="External References\ExtendedNumerics.BigDecimal.dll" />
+    <Content Include="External References\ICSharpCode.SharpZipLib.dll" />
+    <Content Include="External References\MathNet.Numerics.dll" />
+    <Content Include="External References\Microsoft.IO.RecyclableMemoryStream.dll" />
+    <Content Include="External References\Newtonsoft.Json.dll" />
+    <Content Include="External References\NPOI.Core.dll" />
+    <Content Include="External References\NPOI.OOXML.dll" />
+    <Content Include="External References\NPOI.OpenXml4Net.dll" />
+    <Content Include="External References\NPOI.OpenXmlFormats.dll" />
+    <Content Include="External References\S7.Net.dll" />
+    <Content Include="External References\SixLabors.Fonts.dll" />
+    <Content Include="External References\SixLabors.ImageSharp.dll" />
+    <Content Include="External References\stdole.dll" />
+    <Content Include="External References\System.Buffers.dll" />
+    <Content Include="External References\System.Memory.dll" />
+    <Content Include="External References\System.Numerics.Vectors.dll" />
+    <Content Include="External References\System.Runtime.CompilerServices.Unsafe.dll" />
+    <Content Include="External References\System.Security.Cryptography.Pkcs.dll" />
+    <Content Include="External References\System.Security.Cryptography.Xml.dll" />
+    <Content Include="External References\System.Text.Encoding.CodePages.dll" />
+    <Content Include="External References\System.Threading.Tasks.Extensions.dll" />
+    <Content Include="External References\System.ValueTuple.dll" />
+    <Content Include="External References\Xceed.Wpf.AvalonDock.dll" />
+    <Content Include="External References\Xceed.Wpf.AvalonDock.Themes.Aero.dll" />
+    <Content Include="External References\Xceed.Wpf.AvalonDock.Themes.Metro.dll" />
+    <Content Include="External References\Xceed.Wpf.AvalonDock.Themes.VS2010.dll" />
+    <Content Include="External References\Xceed.Wpf.Toolkit.dll" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
