@@ -54,7 +54,14 @@ namespace VisionProApplication
                 mAttached = true;
                 for (int i = 0; i < _cogToolBlockManager.Count; i++)
                 {
-                    _cogToolBlockManager[i].Ran += _cogJobManager_Ran;
+                    try
+                    {
+                        _cogToolBlockManager[i].Ran += _cogJobManager_Ran;
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Không đọc được toolblock, hãy load file khác!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
                 }
             }
             else

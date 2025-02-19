@@ -1,5 +1,4 @@
 ﻿using Cognex.VisionPro;
-using Org.BouncyCastle.Asn1.Cms;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
